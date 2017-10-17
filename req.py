@@ -138,6 +138,7 @@ class Susp:
         try:
             _snc_cnt = __snc_cnt_inc.getRegister(0)
         except Exception as e:
+            crit_err_cntr+=1
             print("Register reading issue")
 
         return _snc_cnt
@@ -173,6 +174,7 @@ class Susp:
                 #converting to string
                 __single_temp = str(__single_snc_data/10)
             except Exception as e:
+                crit_err_cntr+=1
                 __single_snc_data="Register reading issue"
                 print(e)
             _sncs_data[num] = __single_temp
@@ -199,6 +201,7 @@ class Susp:
         try:
             _charge = str(__inc_charge.getRegister(0)/100)
         except Exception as e:
+            crit_err_cntr+=1
             _charge="Register reading issue"
             print(e)
 
@@ -231,6 +234,7 @@ susp_1 = Susp(parent_hub=hub_num_1, susp_id=1)
 
 #testo_wr(hub_num_1)
 it_cntr = 0
+crit_err_cntr = 0
 #INFINITE CYCLE#
 while 1:
     try:
@@ -240,3 +244,4 @@ while 1:
     time.sleep(1)
     it_cntr += 1
     print("Iterations: ", it_cntr)
+    print("Crit errors: ", crit_err_cntr)
