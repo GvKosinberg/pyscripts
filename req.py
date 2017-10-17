@@ -1,0 +1,223 @@
+import requests
+import serial
+from pymodbus.pdu import ModbusRequest
+from pymodbus.exceptions import ModbusIOException
+from pymodbus.client.sync import ModbusSerialClient as ModbusClient
+from pymodbus.transaction import ModbusRtuFramer
+import json
+
+#XXX:for devs
+import random
+import time
+
+#MODBUS Parameters Class
+class mbus:
+    def __init__(self, mth, prt, stpb, btsz, par, bdrt, slv_adr, tmt):
+        #method ("RTU", "TCP")
+        self.mth = mth
+        #port ('COM6' (windows), '/dev/ttyAMA0' (linux))
+        self.prt = prt
+        #stopbits (int)
+        self.stpb = stpb
+        #bytesize (int)
+        self.btsz = btsz
+        #parity ('N'-none)
+        self.par  = par
+        #baudrate (int)
+        self.bdrt = bdrt
+        #slave address
+        self.slv_adr = slv_adr
+        #timeout
+        self.tmt = tmt
+
+#Hub class
+class Hub:
+    def __init__(self, h_id, susp_id, mb_params, http_params):
+        #Hub id (int)
+        self.h_id = h_id
+        #Suspension address (0x01)
+        self.susp_id = susp_id
+        #Modbus parameters (mbus object)
+        self.mb_params = mb_params
+        #Root http of server
+        self.http_params = http_params
+
+    #boolean fn: Mbus init & open port
+    def set_connection(self):
+        __cn_error_cnt = 0
+        #Modbus client inicialization with mbus parameters
+        self.client= ModbusClient(method = self.mb_params.mth,
+                                    port=self.mb_params.prt,
+                                    stopbits = self.mb_params.stpb,
+                                    bytesize = self.mb_params.btsz,
+                                    parity = self.mb_params.par,
+                                    baudrate = self.mb_params.bdrt,
+                                    timeout = self.mb_params.tmt)
+        #Open port
+        self.connection = self.client.connect()
+        return self.connection
+
+    #void fn: Close port
+    def disconnect(self):
+        self.connection = self.client.close()
+
+    #int fn: reads num of sncs, returns (int)
+    def read_snc_cnt(self):
+        #address of suspension's num of sncs register
+        __addr = self.susp_id<<8 | 0x00FF #a = adr_req<<8 | sncs_c
+        #make a modbus request
+        __snc_cnt_inc = self.client.read_holding_registers(
+                                                    __addr,
+                                                    count=1,
+                                                    unit=self.mb_params.slv_adr)
+        if isinstance(__snc_cnt_inc, ModbusIOException):
+            print("Modbus register reading artifact: snc_cnt")
+            __snc_cnt_inc = self.client.read_holding_registers(
+                                                    __addr,
+                                                    count=1,
+                                                    unit=self.mb_params.slv_adr)
+
+        try:
+            _snc_cnt = __snc_cnt_inc.getRegister(0)
+        except Exception as e:
+            print("Register reading issue")
+
+        return _snc_cnt
+
+    #dict fn: reads temperatures on sencors, returns dict with keys (val in str)
+    #{"sncs_i": "12.3"}
+    def read_temps(self, ns):
+        #address of suspension's temperatures register
+        __addr = self.susp_id<<8 | 0x0001
+        #read num of sncs
+        __num_of_sncs = ns
+
+        __sncs_income_data = self.client.read_holding_registers(
+                                                    __addr,
+                                                    count=__num_of_sncs,
+                                                    unit=self.mb_params.slv_adr)
+        if isinstance(__sncs_income_data, ModbusIOException):
+            print("Modbus register reading artifact: sncs_data")
+            __sncs_income_data = self.client.read_holding_registers(
+                                                    __addr,
+                                                    count=__num_of_sncs,
+                                                    unit=self.mb_params.slv_adr)
+
+        #init dict for temps transmission
+        _sncs_data = {}
+        __single_temp = "0.0"
+
+        #decomposition of responce & updating transmission dict
+        for num in range (0, __num_of_sncs):
+            try:
+                __single_snc_data = __sncs_income_data.getRegister(num)
+                #converting to string
+                __single_temp = str(__single_snc_data/10)
+            except Exception as e:
+                __single_snc_data="Register reading issue"
+                print(e)
+            _sncs_data[num] = __single_temp
+
+        return _sncs_data
+
+    #int fn: read charge level & convert it to %, returns char("3.3")
+    def read_charge(self):
+        #tbd
+        #address of suspension's charge register
+        __addr = self.susp_id<<8 | 0x0000
+
+        #TODO: comment cuz thereisnospoon(mb_client)
+        __inc_charge = self.client.read_holding_registers(__addr,
+                                                    count=1,
+                                                    unit=self.mb_params.slv_adr)
+        if isinstance(__inc_charge, ModbusIOException):
+            print("Modbus register reading artifact: charge")
+            __inc_charge = self.client.read_holding_registers(__addr,
+                                                    count=1,
+                                                    unit=self.mb_params.slv_adr)
+
+        try:
+            _charge = str(__inc_charge.getRegister(0)/100)
+        except Exception as e:
+            _charge="Register reading issue"
+            print(e)
+
+        #Read & convert
+        #_charge = random.randint(0, 100)
+        return _charge
+
+    #dict fn: reads all params and convert them to dict w/ json
+    def get_trans(self):
+        if self.set_connection():
+            #read num of sncs
+            __snc_cnt = self.read_snc_cnt()
+
+            #TODO: read temperatures
+            __temps = json.dumps(self.read_temps(__snc_cnt), sort_keys=True)
+
+            #read charge level
+            __charge = self.read_charge()
+
+            #pack data to transmission dict
+            self.trans_data = {
+                                'charge_level': __charge,
+                                'num_of_sncs': __snc_cnt,
+                                "temps": __temps
+                                }
+
+            self.disconnect()
+            print("Transmission data:")
+            print(self.trans_data)
+            return True
+        else:
+            print("Can't connect to port")
+            return False
+
+    #void fn: gets transmission data & do a POST request to srever
+    #(to h_id hub page)
+    def post_http(self):
+        #get transmission data
+        if self.get_trans():
+            #do a POST request
+            try:
+                self.req = requests.post(self.http_params+'/hub/'
+                                        +str(self.h_id)+'/susp/'
+                                        +str(self.susp_id)+'/',
+                                        self.trans_data)
+                print("HTTP error code:", self.req.status_code)
+                #print("Responce:", self.req.text)
+            except Exception as e:
+                print ("Can't reach host HTTP")
+                #print(e)
+        else:
+            print("Can't get transmission data")
+
+
+#INIT HTTP PARAMETERS#
+#http_parameters = 'http://127.0.0.1:8000'
+http_parameters = 'http://kocuoneu.pythonanywhere.com'
+
+#INIT MODBSU PARAMETERS#
+mb_parameters = mbus("rtu", 'COM6', 1, 8, 'N', 9600, 1, 1)
+#mb_parameters = mbus("rtu", '/dev/ttyAMA0', 1, 8, 'N', 9600, 1)
+
+#INIT HUB OBJECTS#
+hub_num_1 = Hub(1, 0x01, mb_parameters, http_parameters)
+#hub_num_2 = Hub(2, 0x01, mb_parameters, http_parameters)
+#hub_num_3 = Hub(3, 0x01, mb_parameters, http_parameters)
+
+#hub_num_1.post_http()
+# hub_num_2.post_http()
+# hub_num_3.post_http()
+
+#testo_wr(hub_num_1)
+it_cntr = 0
+#INFINITE CYCLE#
+while 1:
+    try:
+        hub_num_1.post_http()
+    except Exception as e:
+        print(e)
+    time.sleep(1)
+    it_cntr += 1
+    print(it_cntr)
