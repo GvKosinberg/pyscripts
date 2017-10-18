@@ -1,4 +1,5 @@
 *.pyc
 pymodbus
 myvenv
+log.txt
 __pycache__

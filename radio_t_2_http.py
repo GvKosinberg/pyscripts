@@ -8,6 +8,24 @@ import json
 import time
 import sys
 
+import logging
+from logging.handlers import RotatingFileHandler
+
+log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s')
+
+logFile = 'log.txt'
+
+my_handler = RotatingFileHandler(logFile, mode='a', maxBytes=5*1024*1024,
+                                 backupCount=2, encoding=None, delay=0)
+my_handler.setFormatter(log_formatter)
+my_handler.setLevel(logging.DEBUG)
+
+app_log = logging.getLogger('root')
+app_log.setLevel(logging.DEBUG)
+
+app_log.addHandler(my_handler)
+
+
 #MODBUS Parameters Class
 class mbus:
     def __init__(self, mth, prt, stpb, btsz, par, bdrt, tmt):
@@ -245,5 +263,4 @@ class cycle:
                 if inc_msg=='y':
                     break
                 elif inc_msg=='n':
-                    print("2")
                     continue
