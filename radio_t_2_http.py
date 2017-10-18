@@ -6,6 +6,7 @@ from pymodbus.client.sync import ModbusSerialClient as ModbusClient
 from pymodbus.transaction import ModbusRtuFramer
 import json
 import time
+import sys
 
 #MODBUS Parameters Class
 class mbus:
@@ -28,7 +29,7 @@ class mbus:
 #--------------------------------------------------------------#
 #Hub class
 class Hub:
-    def __init__(self, h_id, mb_params, slv_adr, http_params):
+    def __init__(self, h_id, cyc, mb_params, slv_adr, http_params):
         #Hub id (int)
         self.h_id = h_id
         #Modbus parameters (mbus object)
@@ -37,8 +38,14 @@ class Hub:
         self.slv_adr = slv_adr
         #Root http of server
         self.http_params = http_params
+        #XXX
+        cyc.add_hub_to_list(self)
         #TODO: ss
         self.susps = []
+
+    #void fn: Add suspension object to hub's list of suspensions
+    def add_susp_to_list(self, susp_2_list):
+        self.susps.append(susp_2_list)
 
     #boolean fn: Mbus init & open port
     def set_connection(self):
@@ -58,11 +65,7 @@ class Hub:
     def disconnect(self):
         self.connection = self.client.close()
 
-    def add_susp_to_list(self, susp_2_list):
-        #XXX:A:A:A:
-        self.susps.append(susp_2_list)
-
-    #dict fn: reads all params and convert them to dict w/ json
+    #boolean fn: reads all params and convert them to dict w/ json
     def get_trans(self, susp):
         if self.set_connection():
             #read num of sncs
@@ -209,39 +212,38 @@ class Susp:
         #_charge = random.randint(0, 100)
         return _charge
 
+class cycle:
+    def __init__(self, delay):
+        self.hubs_list = []
+        self.delay = delay
 
-#INIT HTTP PARAMETERS#
-#http_parameters = 'http://127.0.0.1:8000'
-http_parameters = 'http://kocuoneu.pythonanywhere.com'
+    def add_hub_to_list(self, hub_2_list):
+        self.hubs_list.append(hub_2_list)
 
-#INIT MODBSU PARAMETERS#
-mb_parameters = mbus("rtu", 'COM6', 1, 8, 'N', 9600, 1)
-#mb_parameters = mbus("rtu", '/dev/ttyAMA0', 1, 8, 'N', 9600, 1)
+    #INFINITE CYCLE#
+    def start(self):
+        it_cntr = 0
+        crit_err_cntr = 0
 
-#INIT OBJECTS#
-#--HUB №1--#
-hub_num_1 = Hub(1, mb_parameters, 1, http_parameters)
-susp_1 = Susp(parent_hub=hub_num_1, susp_id=1)
+        while 1:
+            try:
+                for hub in self.hubs_list:
+                    try:
+                        hub.post_http()
+                    except Exception as e:
+                        print(e)
+                time.sleep(self.delay)
+                it_cntr += 1
+                print("Iterations: ", it_cntr)
+                print("Crit errors: ", crit_err_cntr)
 
-
-#hub_num_2 = Hub(2, 0x01, mb_parameters, http_parameters)
-#hub_num_3 = Hub(3, 0x01, mb_parameters, http_parameters)
-
-
-#hub_num_1.post_http()
-# hub_num_2.post_http()
-# hub_num_3.post_http()
-
-#testo_wr(hub_num_1)
-it_cntr = 0
-crit_err_cntr = 0
-#INFINITE CYCLE#
-while 1:
-    try:
-        hub_num_1.post_http()
-    except Exception as e:
-        print(e)
-    time.sleep(1)
-    it_cntr += 1
-    print("Iterations: ", it_cntr)
-    print("Crit errors: ", crit_err_cntr)
+            except KeyboardInterrupt:
+                inc_msg = input("Прервать цикл? (y/n):")
+                while (inc_msg != 'y' and inc_msg != 'n'):
+                    print("Некорректный ввод")
+                    inc_msg = input("Прервать цикл? (y/n):")
+                if inc_msg=='y':
+                    break
+                elif inc_msg=='n':
+                    print("2")
+                    continue
