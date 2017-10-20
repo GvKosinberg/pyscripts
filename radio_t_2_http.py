@@ -65,6 +65,21 @@ class Hub:
     def add_susp_to_list(self, susp_2_list):
         self.susps.append(susp_2_list)
 
+    def send_num_of_susps(self):
+        susps_cnt = len(self.susps)
+        n_o_s = {'num_of_susps': susps_cnt}
+        print(n_o_s)
+        try:
+            self.req = requests.post(self.http_params+'/hub/'
+                                    +str(self.h_id)+'/',
+                                    n_o_s)
+            print("HTTP error code:", self.req.status_code)
+            #print("Responce:", self.req.text)
+        except Exception as e:
+            print ("Can't reach host HTTP")
+            #print(e)
+
+
     #boolean fn: Mbus init & open port
     def set_connection(self):
         #Modbus client inicialization with mbus parameters
