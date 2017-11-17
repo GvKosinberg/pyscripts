@@ -7,6 +7,7 @@ from pymodbus.transaction import ModbusRtuFramer
 import json
 import time
 import sys
+import random
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -65,21 +66,6 @@ class Hub:
     def add_susp_to_list(self, susp_2_list):
         self.susps.append(susp_2_list)
 
-    def send_num_of_susps(self):
-        susps_cnt = len(self.susps)
-        n_o_s = {'num_of_susps': susps_cnt}
-        print(n_o_s)
-        try:
-            self.req = requests.post(self.http_params+'/hub/'
-                                    +str(self.h_id)+'/',
-                                    n_o_s)
-            print("HTTP error code:", self.req.status_code)
-            #print("Responce:", self.req.text)
-        except Exception as e:
-            print ("Can't reach host HTTP")
-            #print(e)
-
-
     #boolean fn: Mbus init & open port
     def set_connection(self):
         #Modbus client inicialization with mbus parameters
@@ -97,6 +83,42 @@ class Hub:
     #void fn: Close port
     def disconnect(self):
         self.connection = self.client.close()
+
+    #TEMP: Test random values
+    def random_stuff(self):
+        for susp in self.susps:
+            __snc_cnt = random.randint(1, 30)
+            __charge = str(random.randint(300, 480)/100)
+
+            #init dict for temps transmission
+            _sncs_data = {}
+            __single_temp = "0.0"
+
+            for num in range (0, __snc_cnt):
+                __single_snc_data = random.randint(100, 400)
+                #converting to string
+                __single_temp = str(__single_snc_data/10)
+                _sncs_data[num] = __single_temp
+
+            __temps = json.dumps(_sncs_data, sort_keys=True)
+
+            self.trans_data = {
+                                'charge_level': __charge,
+                                'num_of_sncs': __snc_cnt,
+                                "temps": __temps
+                                }
+
+            try:
+                self.req = requests.post(self.http_params+'/hub/'
+                                        +str(self.h_id)+'/susp/'
+                                        +str(susp.susp_id)+'/',
+                                        self.trans_data)
+                #print("HTTP error code:", self.req.status_code)
+                #print("Responce:", self.req.text)
+            except Exception as e:
+                print ("Can't reach host HTTP")
+                #print(e)
+
 
     #boolean fn: reads all params and convert them to dict w/ json
     def get_trans(self, susp):
@@ -262,7 +284,9 @@ class cycle:
             try:
                 for hub in self.hubs_list:
                     try:
-                        hub.post_http()
+                        #TEMP: test rando,
+                        hub.random_stuff()
+                        #hub.post_http()
                     except Exception as e:
                         print(e)
                 it_cntr += 1
