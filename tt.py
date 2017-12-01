@@ -1,60 +1,77 @@
-import serial
-from pymodbus.pdu import ModbusRequest
-from pymodbus.client.sync import ModbusSerialClient as ModbusClient
-from pymodbus.transaction import ModbusRtuFramer
-
+import rfm69
 import logging
-logging.basicConfig()
-log = logging.getLogger()
-log.setLevel(logging.DEBUG)
+import time
 
-client = ModbusClient(method='rtu', port='COM6', timeout=0.5, baudrate=9600)
+logging.basicConfig(level=logging.DEBUG)
 
-client.connect()
+myconf = rfm69.RFM69Configuration()
 
+#XXX
+#bitrate
+myconf.bitrate_msb = 0x1A
+myconf.bitrate_lsb = 0x0B
 
-addr = 0x01FF
-rr = client.read_holding_registers(addr, count=1, unit=1)
-res = rr.getRegister(0)
-print(str(rr))
-print(res)
-addr = 0x0101
-r_sncs = client.read_holding_registers(addr, count=res, unit=1)
-dd = {}
-for num in range(0, res):
-    __single_r_data = str(r_sncs.getRegister(num))
-    __single_r = str(__single_r_data)
-    __temporary_dict = {'snc_'+str(num): __single_r}
-    dd.update(__temporary_dict)
-print(dd)
+#freq dev
+myconf.fdev_msb = 0x00
+myconf.fdev_lsb = 0x52
 
-client.close()
+#BW filter
+myconf.rx_bw = 0x55
 
+#LNA
+myconf.lna = 0x88
 
-##XXX: dumps
-    # #TEMP: test fn
-    # def testo_rd(self):
-    #     self.set_connection()
-    #     addr = 0x0000
-    #     _trans_data= {}
-    #     q = 0
-    #
-    #     #__single_r_data = self.client.read_coils(0x0001, count=1, unit=1)
-    #     _i_data = self.client.read_input_registers(addr, count=1, unit=1)
-    #
-    #     print(_i_data)
-    #     try:
-    #         q = round(_i_data.getRegister(0)/1640, 3)
-    #     except Exception as e:
-    #         q="NONE"
-    #         print(e)
-    #
-    #     _trans_data = {'Input_0': q}
-    #     #for num in range (0, 8):
-    #     #    __single_r_data = str(_r_data.getBit(num))
-    #     #    __single_r = str(__single_r_data)
-    #     #    __temporary_dict = {'r_'+str(num): __single_r}
-    #     #    _trans_data.update(__temporary_dict)
-    #     self.disconnect()
-    #     print(_trans_data)
-    #     return _trans_data
+#PA_LVL
+myconf.pa_level = (0x40 | (28))
+
+#DIO
+myconf.dio_mapping_1 = 0x12
+myconf.dio_mapping_2 = 0x47
+
+#Sync
+myconf.sync_config = 0x88
+myconf.sync_value_1 = (0x0101 >> 8)
+myconf.sync_value_2 = 0x0101
+
+#Packet config #WWWW#
+myconf.packet_config_2 = 0x02
+
+#FIFO trsh
+myconf.fifo_treshhold = 0x8F
+
+#DAGC
+myconf.test_dagc = 0x30
+
+#FREQ
+myconf.frf_msb = 0x6C
+myconf.frf_mid = 0x48
+myconf.frf_lsb = 0x0F
+#XXX
+
+tt = rfm69.RFM69(dio0_pin=24, reset_pin=22, spi_channel = 0, config = myconf)
+
+#setting RSSI treshold
+tt.set_rssi_threshold(-114)
+#SET NODE AND BRDCAST
+tt.spi_write(0x39, 0x01)
+tt.spi_write(0x3A, 0xFF)
+#SET PACKCONF1
+tt.spi_write(0x37, 0x94)
+#set AFC BW
+tt.spi_write(0x1a, 0x8B)
+#tt.spi_write(0x00, 0x00)
+
+print(tt.read_temperature())
+#print(tt.get_rssi())
+for reg in tt.config.get_registers():
+    print(hex(reg), hex(tt.spi_read(reg)))
+
+print(hex(tt.spi_read(0x1a)))
+dat = "test"
+tt.send_packet(dat)
+
+#tt.calibrate_rssi_threshold()
+
+#print("fifo:", tt.spi_read(0x00))
+#print(tt.wait_for_packet(timeout=20))
+#time.sleep(1)
