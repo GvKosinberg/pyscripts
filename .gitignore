@@ -1,4 +1,6 @@
 *.pyc
 pymodbus
 myvenv
+log.txt
 __pycache__
+rfm69-python
