@@ -8,18 +8,18 @@ myconf = rfm69.RFM69Configuration()
 
 #XXX
 #bitrate
-myconf.bitrate_msb = 0x1A
+myconf.bitrate_msb = 0x1A#
 myconf.bitrate_lsb = 0x0B
 
 #freq dev
-myconf.fdev_msb = 0x00
+myconf.fdev_msb = 0x00#
 myconf.fdev_lsb = 0x52
 
 #BW filter
-myconf.rx_bw = 0x55
+myconf.rx_bw = 0x55#
 
 #LNA
-myconf.lna = 0x88
+myconf.lna = 0x88#
 
 #PA_LVL
 myconf.pa_level = (0x40 | (28))
