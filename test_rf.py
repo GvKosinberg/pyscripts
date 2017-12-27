@@ -76,9 +76,9 @@ def read_fake(rfm):
 	snc_humi_top = "oh/sncs/temp/humi/1"
 	write(snc_humi_top, snc_humi_val)
 
-	door_val = get_random_state("OC")
-	door_top = "oh/sncs/doors/1"
-	write(door_top, door_val)
+	# door_val = get_random_state("OC")
+	# door_top = "oh/sncs/doors/1"
+	# write(door_top, door_val)
 	print("Done")
 
 if __name__ == "__main__":
