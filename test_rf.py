@@ -69,11 +69,11 @@ def read_fake(rfm):
 	write(snc_temp_heater_top, snc_temp_heater_val)
 
 	snc_lumi_val = random.uniform(150.00, 300.00)
-	snc_lumi_top = "oh/sncs/temp/lumi/1"
+	snc_lumi_top = "oh/sncs/lumi/1"
 	write(snc_lumi_top, snc_lumi_val)
 
 	snc_humi_val = random.randint(0, 100)
-	snc_humi_top = "oh/sncs/temp/humi/1"
+	snc_humi_top = "oh/sncs/humi/1"
 	write(snc_humi_top, snc_humi_val)
 
 	# door_val = get_random_state("OC")
