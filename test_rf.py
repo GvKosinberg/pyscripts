@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf8 -*-
+import os, sys
 import rfm69
 import logging
 import time
