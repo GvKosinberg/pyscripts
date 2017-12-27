@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
+#Author: Antipin S.O. @RLDA
 import os, sys
 import rfm69
 import logging
