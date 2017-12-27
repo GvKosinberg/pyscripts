@@ -4,6 +4,10 @@ import time
 import random
 import paho.mqtt.publish as pbl
 
+"""
+	Инициализация логгера, RFM69
+	На выходе объект класса rfm69
+"""
 def init():
 
 	logging.basicConfig(level=logging.DEBUG)
@@ -16,9 +20,15 @@ def init():
 	tt.set_rssi_threshold(-114)
 	return tt
 
+"""
+	Записать данные datto в топик toppo
+"""
 def write(toppo, datto):
 	pbl.single(toppo, datto, hostname="localhost", port=1883)
 
+"""
+	Считать данные (реальные)
+"""
 def read_real(rfm):
 	# 	inc_data = rfm.wait_for_packet(15)
 	#
@@ -38,6 +48,9 @@ def read_real(rfm):
 	# 			pbl.single(temp_snc_num, temp_snc_val, hostname="localhost", port=1883)
 	pass
 
+"""
+	Привести формат данных от датчиков к удобоваримому для openhab
+"""
 def get_random_state(fmt):
 	if fmt=="OC":
 		if random.randint(0,1)==0:
@@ -57,12 +70,22 @@ def get_random_state(fmt):
 	return(out)
 
 
-
+"""
+	Считать данные (рандом для тестов)
+"""
 def read_fake(rfm):
+	"""
+		*_val - значение
+		*_top - адрес топика в брокере
+		write - функция записи в броекер
+	"""
+
+	#Температура из регистра чипа rfm69
 	temp_rfm_val = rfm.read_temperature()
 	temp_rfm_top = "oh/trf"
 	write(temp_rfm_top, temp_rfm_val)
 
+	#Температуры воздуха, воды, отопления соответственно
 	snc_temp_air_val = random.uniform(19.00, 25.00)
 	snc_temp_air_top = "oh/sncs/temp/air"
 	write(snc_temp_air_top, snc_temp_air_val)
@@ -73,22 +96,27 @@ def read_fake(rfm):
 	snc_temp_heater_top = "oh/sncs/temp/heater"
 	write(snc_temp_heater_top, snc_temp_heater_val)
 
+	#Освещенность в люксах
 	snc_lumi_val = random.uniform(150.00, 300.00)
 	snc_lumi_top = "oh/sncs/lumi/1"
 	write(snc_lumi_top, snc_lumi_val)
 
+	#Влажность в процентах
 	snc_humi_val = random.randint(0, 100)
 	snc_humi_top = "oh/sncs/humi/1"
 	write(snc_humi_top, snc_humi_val)
 
+	#Двери (откр/закр)
 	door_val = get_random_state("OC")
 	door_top = "oh/sncs/doors/1"
 	write(door_top, door_val)
 
+	#Счетчики
 	counter_val = random.randint(100, 500)
 	counter_top = "oh/cntrs/1"
 	write(counter_top, counter_val)
 
+	#Датчики утечки, дыма и огня соответственно
 	snc_leak_val = get_random_state("HL")
 	snc_leak_top = "oh/warn/leak"
 	write(snc_leak_top, snc_leak_val)
@@ -101,6 +129,7 @@ def read_fake(rfm):
 	snc_flame_top = "oh/warn/flame"
 	write(snc_flame_top, snc_flame_val)
 
+	#Датчики присутствия и движения соответственно
 	pres_pres_val = get_random_state("HL")
 	pres_pres_top = "oh/pres/pres"
 	write(pres_pres_top, pres_pres_val)
@@ -109,6 +138,7 @@ def read_fake(rfm):
 	pres_motion_top = "oh/pres/motion"
 	write(pres_motion_top, pres_motion_val)
 
+	#Вывод в консольпо завершению итерации цикла чтения/записи
 	print("Done")
 
 if __name__ == "__main__":
