@@ -49,6 +49,11 @@ def get_random_state(fmt):
 			out = "OFF"
 		else:
 			out = "ON"
+	elif fmt=="HL":
+		if random.randint(0,1)==0:
+			out = "LOW"
+		else:
+			out = "HIGH"
 	return(out)
 
 
@@ -79,6 +84,31 @@ def read_fake(rfm):
 	door_val = get_random_state("OC")
 	door_top = "oh/sncs/doors/1"
 	write(door_top, door_val)
+
+	counter_val = random.randint(100, 500)
+	counter_top = "oh/cntrs/1"
+	write(counter_top, counter_val)
+
+	snc_leak_val = get_random_state("HL")
+	snc_leak_top = "oh/warn/leak"
+	write(snc_leak_top, snc_leak_val)
+
+	snc_smoke_val = get_random_state("HL")
+	snc_smoke_top = "oh/warn/smoke"
+	write(snc_smoke_top, snc_smoke_val)
+
+	snc_flame_val = get_random_state("HL")
+	snc_flame_top = "oh/warn/flame"
+	write(snc_flame_top, snc_flame_val)
+
+	pres_pres_val = get_random_state("HL")
+	pres_pres_top = "oh/pres/pres"
+	write(pres_pres_top, pres_pres_val)
+
+	pres_motion_val = get_random_state("HL")
+	pres_motion_top = "oh/pres/motion"
+	write(pres_motion_top, pres_motion_val)
+
 	print("Done")
 
 if __name__ == "__main__":
