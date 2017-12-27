@@ -56,7 +56,7 @@ def get_random_state(fmt):
 def read_fake(rfm):
 	temp_rfm_val = rfm.read_temperature()
 	temp_rfm_top = "oh/trf"
-	write(temp_snc_top, temp_rfm_val)
+	write(temp_rfm_top, temp_rfm_val)
 
 	snc_temp_air_val = random.uniform(19.00, 25.00)
 	snc_temp_air_top = "oh/sncs/temp/air"
