@@ -70,15 +70,15 @@ def read_fake(rfm):
 
 	snc_lumi_val = random.uniform(150.00, 300.00)
 	snc_lumi_top = "oh/sncs/temp/lumi/1"
-	write(snc_temp_air_top, snc_temp_air_val)
+	write(snc_lumi_top, snc_lumi_val)
 
 	snc_humi_val = random.randint(0, 100)
 	snc_humi_top = "oh/sncs/temp/humi/1"
-	write(snc_temp_air_top, snc_temp_air_val)
+	write(snc_humi_top, snc_humi_val)
 
 	door_val = get_random_state("OC")
 	door_top = "oh/sncs/doors/1"
-	write(snc_temp_air_top, snc_temp_air_val)
+	write(door_top, door_val)
 	print("Done")
 
 if __name__ == "__main__":
