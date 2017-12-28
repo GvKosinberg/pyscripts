@@ -1,12 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
 #Author: Antipin S.O. @RLDA
-import os, sys
-import rfm69
-import logging
-import time
+# import os, sys
+# import rfm69
+# import logging
+# import time
 import random
-import paho.mqtt.publish as pbl
+# import paho.mqtt.publish as pbl
 
 """
 	Инициализация логгера, RFM69
@@ -61,7 +61,7 @@ def get_random_state(fmt):
              "OO": ["ON", "OFF"],
              "HL": ["HIGH", "LOW"]}
     out = defas[fmt][state]
-	return(out)
+    return out
 
 
 """
@@ -136,8 +136,9 @@ def read_fake(rfm):
 	print("Done")
 
 if __name__ == "__main__":
-	rfm = init()
-	while True:
-		read_fake(rfm)
-		time.sleep(5)
-	print("That's all, folks!")
+	print(get_random_state("OO"))
+	# rfm = init()
+	# while True:
+	# 	read_fake(rfm)
+	# 	time.sleep(5)
+	# print("That's all, folks!")

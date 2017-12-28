@@ -6,6 +6,7 @@ def get_random_state(fmt):
              "OO": ["ON", "OFF"],
              "HL": ["HIGH", "LOW"]}
     out = defas[fmt][state]
+    return out
 
 if __name__ == "__main__":
-    get_random_state("OO")
+    print(get_random_state("OO"))
