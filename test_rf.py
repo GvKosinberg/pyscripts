@@ -56,21 +56,11 @@ def read_real(rfm):
 	Привести формат данных от датчиков к удобоваримому для openhab
 """
 def get_random_state(fmt):
-	if fmt=="OC":
-		if random.randint(0,1)==0:
-			out = "CLOSED"
-		else:
-			out = "OPEN"
-	elif fmt=="OO":
-		if random.randint(0,1)==0:
-			out = "OFF"
-		else:
-			out = "ON"
-	elif fmt=="HL":
-		if random.randint(0,1)==0:
-			out = "LOW"
-		else:
-			out = "HIGH"
+    state = random.randint(0,1)
+    defas = {"OC": ["OPEN", "CLOSED"],
+             "OO": ["ON", "OFF"],
+             "HL": ["HIGH", "LOW"]}
+    out = defas[fmt][state]
 	return(out)
 
 
