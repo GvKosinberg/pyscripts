@@ -9,4 +9,4 @@ def get_random_state(fmt):
     return out
 
 if __name__ == "__main__":
-    print(get_random_state("OO"))
+    print(get_random_state("HL"))

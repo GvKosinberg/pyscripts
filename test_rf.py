@@ -25,10 +25,10 @@ def init():
 	return tt
 
 """
-	Записать данные datto в топик toppo
+	Записать данные dt в топик tpc
 """
-def write(toppo, datto):
-	pbl.single(toppo, datto, hostname="localhost", port=1883)
+def write(tpc, dt):
+	pbl.single(tpc, dt, hostname="localhost", port=1883)
 
 """
 	Считать данные (реальные)
