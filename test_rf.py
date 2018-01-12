@@ -136,7 +136,7 @@ def read_fake(rfm):
 	print("Done")
 
 if __name__ == "__main__":
-	int cntr = 0;
+	cntr = 0;
 	rfm = init()
 	try:
 		while True:
@@ -146,4 +146,3 @@ if __name__ == "__main__":
 			cntr++
 	except KeyboardInterrupt:
 		print("That's all, folks!")
-		
