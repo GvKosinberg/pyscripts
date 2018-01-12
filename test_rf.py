@@ -143,6 +143,6 @@ if __name__ == "__main__":
 			read_fake(rfm)
 			time.sleep(10)
 			print(cntr)
-			cntr++
+			cntr+=1
 	except KeyboardInterrupt:
 		print("That's all, folks!")
