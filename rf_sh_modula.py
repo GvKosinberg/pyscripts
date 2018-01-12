@@ -35,15 +35,13 @@ def init_rfm():
     Класс управляемых устройств и сенсоров
 """
 class Device:
-    def __init__(self, d_type, id_grp, name, data=0, rfm):
+    def __init__(self, d_type, id_grp, name, rfm):
         #Тип устройства (датчик/исполнитель) (str)
         self.d_type = d_type
         #Идентификатор группы устройств (str)
         self.id = id_grp
         #Имя (str)
         self.name = name
-        #TODO: zasun' suda parametri, debil
-        self.data = data
         #Экземпляр класса rfm69 (rfm69)
         self.rfm = rfm
         #Время последнего полученного ответа
@@ -57,9 +55,10 @@ class Device:
     """
         Метод записи полученного значения датчика в брокер
     """
-    def write2mqtt(self):
-        topic = self.id_grp + self.name
-        val = str(data)
+    def write2mqtt(self, data):
+        #topic = self.id_grp + self.name
+        #val = str(data)
+        #pbl.single(topic, val, hostname="localhost", port=1883)
         pass
 
     """
@@ -69,9 +68,21 @@ class Device:
         pass
 
 #TEMP: random generator for tests
-def get_rand():
-    pass
+def get_random_state(fmt=None, lim_low=None, lim_high=None):
+    defas = {"OC": ["OPEN", "CLOSED"],
+             "OO": ["ON", "OFF"],
+             "HL": ["HIGH", "LOW"]}
+    if fmt == "OC" or fmt == "OO" or fmt == "HL":
+        state = random.randint(0,1)
+        out = defas[fmt][state]
+    else:
+        out = random.uniform(lim_low, lim_high)
+    return out
 
 #DEBUG: just 4 tests
 if __name__ == "__main__":
     rfm = init_rfm()
+	try:
+        
+	except KeyboardInterrupt:
+		print("That's all, folks!")
