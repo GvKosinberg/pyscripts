@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf8 -*-
 #Author: Antipin S.O. @RLDA
 
 """
@@ -39,7 +40,7 @@ def init_rfm():
     Класс управляемых устройств и сенсоров
 """
 class Device:
-    def __init__(self, d_type, name, rfm):
+    def __init__(self, d_type, name, rfm, d_timeout):
         #Тип устройства (датчик/исполнитель) (str)
         __types = [#-------------------------------------------#
                     "SNC_T_AIR", "SNC_T_WAT", "SNC_T_HTR", "SNC_LUM", "SNC_HUM",
@@ -62,24 +63,41 @@ class Device:
         #Экземпляр класса rfm69 (rfm69)
         self.rfm = rfm
         #Данные
-        self.data = None
+        self.data = "-"
         #Время последнего полученного ответа
-        self.last_responce = time.clock()
+        self.last_responce = time.time()
+        #Таймаут получения ответа (в секундах)
+        self.d_timeout = d_timeout
         #TODO: Dobavit' identificator v list proverki rfm'a
+        #Счетчик ошибок
+        self.error_cnt = 0
 
     #TEMP: place for rand fux
     def sumfunc(self):
         pass
 
     """
+        Метод проверки timeout'а ответа
+    """
+    def check_timeout(self):
+        razn = time.time() - self.last_responce
+        if razn > self.d_timeout:
+            self.data = "-"
+        print(razn)
+
+    """
         Метод записи полученного значения датчика в брокер
     """
-    def write2mqtt(self, data):
+    def write2mqtt(self):
         #mqtt_topic = "oh" + self.d_type + self.name
-        #mqtt_val = str(data)
+        self.data = self.get_random_state()
+        mqtt_val = self.data
+        #mqtt_val = self.data
         #pbl.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
-        print(str(data))
-        pass
+        print('Obj: %s ' %(self.d_type +"/"+ self.name))
+        #print('Last responce: %s' %str(self.last_responce))
+
+        print(mqtt_val)
 
     """
         Метод отправки значения на исполнительное устройство
@@ -103,13 +121,12 @@ class Device:
                  "SNC_WARN_FLAME": ["HIGH", "LOW"],
                  "SNC_WARN_SMOKE": ["HIGH", "LOW"]}
         if __defas.get(self.d_type) != None:
-            print("doors")
             state = random.randint(0,1)
             out = __defas[self.d_type][state]
         else:
-            print("val")
             out = random.uniform(__val_limits[self.d_type][0],
                                 __val_limits[self.d_type][1])
+        self.last_responce = time.time()
         return out
 
 #DEBUG: just 4 tests
@@ -125,9 +142,10 @@ if __name__ == "__main__":
 
     try:
         while(True):
-            print(str(fake_snc_1.get_random_state()))
-            print(str(fake_snc_2.get_random_state()))
-            print(str(fake_snc_3.get_random_state()))
+            fake_snc_1.write2mqtt()
+            fake_snc_2.write2mqtt()
+            fake_snc_3.write2mqtt()
             time.sleep(5)
+            fake_snc_3.check_timeout()
     except KeyboardInterrupt:
         print("That's all, folks")
