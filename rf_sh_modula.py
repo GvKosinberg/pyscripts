@@ -193,6 +193,9 @@ if __name__ == "__main__":
             fake_mot.write2mqtt()
 
             fake_cntr.write2mqtt()
+
+            log.info("#=========================#")
             time.sleep(5)
+
     except KeyboardInterrupt:
         log.info("That's all, folks")
