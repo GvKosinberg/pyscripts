@@ -21,6 +21,7 @@ import random
 """
 import logging
 logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger("rf_sh_modula")
 
 """
 	Инициализация RFM69
@@ -38,6 +39,10 @@ def init_rfm():
 
 """
     Класс управляемых устройств и сенсоров
+    d_type - тип устройства для записи в формате топика mqtt (string)
+    name - собственное имя устройства (или номер) (string)
+    rfm - объект RFM69 (rfm)
+    d_timeout - таймаут ответа от устройства в секундах (int)
 """
 class Device:
     def __init__(self, d_type, name, rfm, d_timeout):
@@ -56,7 +61,7 @@ class Device:
             if (__types.index(d_type) != None):
                 self.d_type = d_type
         except Exception as e:
-            print("Invalid device type")
+            log.warn("Invalid device type")
         #Идентификатор группы устройств (str)
         # self.id = id_grp
         #Имя (str)
@@ -84,7 +89,8 @@ class Device:
         razn = time.time() - self.last_responce
         if razn > self.d_timeout:
             self.data = "-"
-        print(razn)
+        log.info("Device: %s: last responce: %s"
+                % ((self.d_type+"/"+self.name), razn))
 
     """
         Метод записи полученного значения датчика в брокер
@@ -92,19 +98,21 @@ class Device:
     def write2mqtt(self):
         mqtt_topic = "oh/" + self.d_type + "/" + self.name
 
+        self.check_timeout()
+
         #TEMP: random data
         self.data = self.get_random_state()
 
         mqtt_val = self.data
         mqpb.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
 
-        print('Obj: %s ' %mqtt_topic)
+        log.info('Obj: %s ' %mqtt_topic)
         #.print('Last responce: %s' %str(self.last_responce))
 
-        print(mqtt_val)
+        log.info(mqtt_val)
 
-    """.
-        М.етод отправки значения на исполнительное устройство
+    """
+        Метод отправки значения на исполнительное устройство
     """
     def write2control(self):
         pass
@@ -165,7 +173,7 @@ if __name__ == "__main__":
 
         fake_cntr = Device("cntrs", "1", rfm, 5)
     except Exception as e:
-        print("Init fux")
+        log.warn("Init fux")
         raise(e)
 
     try:
@@ -189,4 +197,4 @@ if __name__ == "__main__":
             fake_cntr.write2mqtt()
             time.sleep(5)
     except KeyboardInterrupt:
-        print("That's all, folks")
+        log.info("That's all, folks")
