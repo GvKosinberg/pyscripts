@@ -90,7 +90,7 @@ class Device:
         Метод записи полученного значения датчика в брокер
     """
     def write2mqtt(self):
-        mqtt_topic = "oh/" + self.d_type + self.name
+        mqtt_topic = "oh/" + self.d_type + "/" + self.name
 
         #TEMP: random data
         self.data = self.get_random_state()
