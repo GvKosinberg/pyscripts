@@ -137,7 +137,7 @@ class Device:
             out = random.uniform(__val_float_limits[self.d_type][0],
                                 __val_float_limits[self.d_type][1])
         elif __val_int_limits.get(self.d_type) != None:
-            out = random.uniform(__val_int_limits[self.d_type][0],
+            out = random.randint(__val_int_limits[self.d_type][0],
                                 __val_int_limits[self.d_type][1])
 
         self.last_responce = time.time()
