@@ -106,10 +106,8 @@ class Device:
         mqtt_val = self.data
         mqpb.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
 
-        log.info('Obj: %s ' %mqtt_topic)
+        log.info('Obj: %s: val: %s ' %(mqtt_topic, mqtt_val))
         #.print('Last responce: %s' %str(self.last_responce))
-
-        log.info(mqtt_val)
 
     """
         Метод отправки значения на исполнительное устройство
