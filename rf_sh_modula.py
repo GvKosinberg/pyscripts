@@ -116,11 +116,11 @@ class Device:
                         "sncs/temp/water": [5.00, 22.00],
                         "sncs/temp/heater": [50.00, 100.00],
                         "sncs/lumi": [150.00, 300.00],
-                        "FAKE": [0, 3378],
                     }
         __val_int_limits = {
-                        "cntrs": [100, 500]
+                        "cntrs": [100, 500],
                         "sncs/humi": [0, 100],
+                        "FAKE": [0, 3378],
         }
         __defas = {
                         "sncs/doors": ["OPEN", "CLOSED"],
