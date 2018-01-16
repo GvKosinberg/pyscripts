@@ -124,8 +124,8 @@ class Device:
         }
         __defas = {
                         "sncs/doors": ["OPEN", "CLOSED"],
-                         "pres/pres": ["ON", "OFF"],
-                         "pres/motion": ["ON", "OFF"],
+                         "pres/pres": ["HIGH", "LOW"],
+                         "pres/motion": ["HIGH", "LOW"],
                          "warn/leak": ["HIGH", "LOW"],
                          "warn/smoke": ["HIGH", "LOW"],
                          "warn/flame": ["HIGH", "LOW"]
