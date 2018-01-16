@@ -96,7 +96,7 @@ class Device:
         self.data = self.get_random_state()
 
         mqtt_val = self.data
-        pbl.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
+        mqpb.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
 
         #print('Obj: %s ' %(self.d_type +"/"+ self.name))
         #print('Last responce: %s' %str(self.last_responce))
