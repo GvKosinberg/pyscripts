@@ -29,11 +29,11 @@ logging.basicConfig(level=logging.DEBUG)
 def init_rfm():
     #TEMP: faek rfm unit
     #rfm_unit = "sum_sh1et"
-    ##_____##
-	myconf = rfm69.RFM69Configuration()
-	rfm_unit = rfm69.RFM69(dio0_pin=24, reset_pin=22, spi_channel = 0, config = myconf)
+    ##_____#
+    myconf = rfm69.RFM69Configuration()
+    rfm_unit = rfm69.RFM69(dio0_pin=24, reset_pin=22, spi_channel = 0, config = myconf)
 	#setting RSSI treshold
-	rfm_unit.set_rssi_threshold(-114)
+    rfm_unit.set_rssi_threshold(-114)
     return rfm_unit
 
 """
