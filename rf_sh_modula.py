@@ -143,7 +143,7 @@ if __name__ == "__main__":
         fake_t_heat = Device("sncs/temp/heater", "1", rfm, 5)
 
         fake_humi = Device("sncs/humi", "1", rfm, 5)
-        fake_lumi = Device("sncs/humi", "1", rfm, 5)
+        fake_lumi = Device("sncs/lumi", "1", rfm, 5)
 
         fake_door = Device("sncs/doors", "1", rfm, 5)
 
@@ -154,7 +154,7 @@ if __name__ == "__main__":
         fake_pres = Device("pres/pres", "1", rfm, 5)
         fake_mot = Device("pres/motion", "1", rfm, 5)
 
-        fake_cntr = Device("cntrs", "1", rfm, 5)
+        #fake_cntr = Device("cntrs", "1", rfm, 5)
     except Exception as e:
         print("Init fux")
         raise(e)
@@ -177,7 +177,7 @@ if __name__ == "__main__":
             fake_pres.write2mqtt()
             fake_mot.write2mqtt()
 
-            fake_cntr.write2mqtt()
+            #fake_cntr.write2mqtt()
             time.sleep(5)
     except KeyboardInterrupt:
         print("That's all, folks")
