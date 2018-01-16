@@ -116,7 +116,8 @@ class Device:
                         "sncs/temp/heater": [50.00, 100.00],
                         "sncs/lumi": [150.00, 300.00],
                         "sncs/humi": [0, 100],
-                        "FAKE": [0, 3378]
+                        "FAKE": [0, 3378],
+                        "cntrs": [100, 500]
                     }
         __defas = {"sncs/doors": ["OPEN", "CLOSED"],
                  "pres/pres": ["ON", "OFF"],
