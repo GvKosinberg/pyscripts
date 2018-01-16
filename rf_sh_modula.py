@@ -98,7 +98,7 @@ class Device:
         mqtt_val = self.data
         mqpb.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
 
-        #.print('Obj: %s ' %(self.d_type +"/"+ self.name))
+        print('Obj: %s ' %(mqtt_topic)
         #.print('Last responce: %s' %str(self.last_responce))
 
         print(mqtt_val)
