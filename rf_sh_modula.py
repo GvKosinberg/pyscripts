@@ -111,26 +111,35 @@ class Device:
 
     #TEMP: random generator for tests
     def get_random_state(self):
-        __val_limits = {"sncs/temp/air": [19.00, 25.00],
+        __val_float_limits = {
+                        "sncs/temp/air": [19.00, 25.00],
                         "sncs/temp/water": [5.00, 22.00],
                         "sncs/temp/heater": [50.00, 100.00],
                         "sncs/lumi": [150.00, 300.00],
-                        "sncs/humi": [0, 100],
                         "FAKE": [0, 3378],
-                        "cntrs": [100, 500]
                     }
-        __defas = {"sncs/doors": ["OPEN", "CLOSED"],
-                 "pres/pres": ["ON", "OFF"],
-                 "pres/motion": ["ON", "OFF"],
-                 "warn/leak": ["HIGH", "LOW"],
-                 "warn/smoke": ["HIGH", "LOW"],
-                 "warn/flame": ["HIGH", "LOW"]}
+        __val_int_limits = {
+                        "cntrs": [100, 500]
+                        "sncs/humi": [0, 100],
+        }
+        __defas = {
+                        "sncs/doors": ["OPEN", "CLOSED"],
+                         "pres/pres": ["ON", "OFF"],
+                         "pres/motion": ["ON", "OFF"],
+                         "warn/leak": ["HIGH", "LOW"],
+                         "warn/smoke": ["HIGH", "LOW"],
+                         "warn/flame": ["HIGH", "LOW"]
+                 }
         if __defas.get(self.d_type) != None:
             state = random.randint(0,1)
             out = __defas[self.d_type][state]
-        else:
-            out = random.uniform(__val_limits[self.d_type][0],
-                                __val_limits[self.d_type][1])
+        elif __val_float_limits.get(self.d_type) != None:
+            out = random.uniform(__val_float_limits[self.d_type][0],
+                                __val_float_limits[self.d_type][1])
+        elif __val_int_limits.get(self.d_type) != None:
+            out = random.uniform(__val_int_limits[self.d_type][0],
+                                __val_int_limits[self.d_type][1])
+
         self.last_responce = time.time()
         return out
 
@@ -154,7 +163,7 @@ if __name__ == "__main__":
         fake_pres = Device("pres/pres", "1", rfm, 5)
         fake_mot = Device("pres/motion", "1", rfm, 5)
 
-        #fake_cntr = Device("cntrs", "1", rfm, 5)
+        fake_cntr = Device("cntrs", "1", rfm, 5)
     except Exception as e:
         print("Init fux")
         raise(e)
@@ -177,7 +186,7 @@ if __name__ == "__main__":
             fake_pres.write2mqtt()
             fake_mot.write2mqtt()
 
-            #fake_cntr.write2mqtt()
+            fake_cntr.write2mqtt()
             time.sleep(5)
     except KeyboardInterrupt:
         print("That's all, folks")
