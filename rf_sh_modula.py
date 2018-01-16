@@ -95,16 +95,16 @@ class Device:
         #TEMP: random data
         self.data = self.get_random_state()
 
-        mqtt_val = self.data
-        mqpb.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
+        m.qtt_val = self.data
+        m.qpb.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
 
-        #print('Obj: %s ' %(self.d_type +"/"+ self.name))
-        #print('Last responce: %s' %str(self.last_responce))
+        #.print('Obj: %s ' %(self.d_type +"/"+ self.name))
+        #.print('Last responce: %s' %str(self.last_responce))
 
-        print(mqtt_val)
+        p.rint(mqtt_val)
 
-    """
-        Метод отправки значения на исполнительное устройство
+    """.
+        М.етод отправки значения на исполнительное устройство
     """
     def write2control(self):
         pass
@@ -138,8 +138,8 @@ if __name__ == "__main__":
     rfm = init_rfm()
     try:
         fake_t_air = Device("sncs/temp/air", "1", rfm, 5)
-        fake_t_wat = Device("sncs/temp/wat", "1", rfm, 5)
-        fake_t_heat = Device("sncs/temp/heat", "1", rfm, 5)
+        fake_t_wat = Device("sncs/temp/water", "1", rfm, 5)
+        fake_t_heat = Device("sncs/temp/heater", "1", rfm, 5)
 
         fake_humi = Device("sncs/humi", "1", rfm, 5)
         fake_lumi = Device("sncs/humi", "1", rfm, 5)
