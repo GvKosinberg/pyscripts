@@ -175,8 +175,8 @@ if __name__ == "__main__":
         raise(e)
 
     try:
+        log.info("Current time: %s" %time.time())
         while(True):
-            log.info("Current time: %s" %time.time)
             fake_t_air.write2mqtt()
             fake_t_wat.write2mqtt()
             fake_t_heat.write2mqtt()
