@@ -45,7 +45,7 @@ class Device:
         __types = [#-------------------------------------------#
                     "sncs/temp/air", "sncs/temp/water", "sncs/temp/heater",
                     "sncs/lumi", "sncs/humi", "sncs/doors",
-                    "warn/leak", "warn/smoke", "warn/smoke",
+                    "warn/leak", "warn/smoke", "warn/flame",
                     "pres/pres", "pres/motion", "FAKE",
                     #------------------------------------------#
                     "cntrs",
