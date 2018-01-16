@@ -95,13 +95,13 @@ class Device:
         #TEMP: random data
         self.data = self.get_random_state()
 
-        m.qtt_val = self.data
-        m.qpb.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
+        mqtt_val = self.data
+        mqpb.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
 
         #.print('Obj: %s ' %(self.d_type +"/"+ self.name))
         #.print('Last responce: %s' %str(self.last_responce))
 
-        p.rint(mqtt_val)
+        print(mqtt_val)
 
     """.
         М.етод отправки значения на исполнительное устройство
