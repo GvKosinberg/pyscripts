@@ -32,7 +32,8 @@ def init_rfm():
     #rfm_unit = "sum_sh1et"
     ##_____#
     myconf = rfm69.RFM69Configuration()
-    rfm_unit = rfm69.RFM69(dio0_pin=24, reset_pin=22, spi_channel = 0, config = myconf)
+    rfm_unit = rfm69.RFM69(dio0_pin=24, reset_pin=22, spi_channel = 0,
+                            config = myconf)
 	#setting RSSI treshold
     rfm_unit.set_rssi_threshold(-114)
     return rfm_unit
@@ -89,7 +90,7 @@ class Device:
         razn = time.time() - self.last_responce
         if razn > self.d_timeout:
             self.data = "-"
-        log.info("Device: %s: last responce: %s"
+        log.info("Device: %s: time between responces: %s"
                 % ((self.d_type+"/"+self.name), razn))
 
     """
@@ -153,23 +154,23 @@ class Device:
 if __name__ == "__main__":
     rfm = init_rfm()
     try:
-        fake_t_air = Device("sncs/temp/air", "1", rfm, 5)
-        fake_t_wat = Device("sncs/temp/water", "1", rfm, 5)
-        fake_t_heat = Device("sncs/temp/heater", "1", rfm, 5)
+        fake_t_air = Device("sncs/temp/air", "1", rfm, 60)
+        fake_t_wat = Device("sncs/temp/water", "1", rfm, 60)
+        fake_t_heat = Device("sncs/temp/heater", "1", rfm, 60)
 
-        fake_humi = Device("sncs/humi", "1", rfm, 5)
-        fake_lumi = Device("sncs/lumi", "1", rfm, 5)
+        fake_humi = Device("sncs/humi", "1", rfm, 60)
+        fake_lumi = Device("sncs/lumi", "1", rfm, 60)
 
-        fake_door = Device("sncs/doors", "1", rfm, 5)
+        fake_door = Device("sncs/doors", "1", rfm, 60)
 
-        fake_leak = Device("warn/leak", "1", rfm, 5)
-        fake_smoke = Device("warn/smoke", "1", rfm, 5)
-        fake_flame = Device("warn/flame", "1", rfm, 5)
+        fake_leak = Device("warn/leak", "1", rfm, 60)
+        fake_smoke = Device("warn/smoke", "1", rfm, 60)
+        fake_flame = Device("warn/flame", "1", rfm, 60)
 
-        fake_pres = Device("pres/pres", "1", rfm, 5)
-        fake_mot = Device("pres/motion", "1", rfm, 5)
+        fake_pres = Device("pres/pres", "1", rfm, 60)
+        fake_mot = Device("pres/motion", "1", rfm, 60)
 
-        fake_cntr = Device("cntrs", "1", rfm, 5)
+        fake_cntr = Device("cntrs", "1", rfm, 60)
     except Exception as e:
         log.warn("Init fux")
         raise(e)
