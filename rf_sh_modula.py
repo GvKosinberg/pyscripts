@@ -110,7 +110,7 @@ class Remote:
                 self.d_type = d_type
                 log.debug("it is a device")
         except Exception as e:
-            log.warn("Invalid device type: %s", %self.d_type)
+            log.warn("Invalid device type: %s" %self.d_type)
         #Имя (str)
         self.name = name
         #Название топика
