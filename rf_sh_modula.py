@@ -189,30 +189,30 @@ class Remote:
 #DEBUG: just 4 tests
 if __name__ == "__main__":
     rfm = init_rfm()
-    mqtt_c = mqtt_init()
+    mqtt_client = mqtt_init()
     try:
         log.info("Init of devices")
-        fake_t_air = Remote("sncs/temp/air", "1", rfm, mqtt_c, 60)
-        fake_t_wat = Remote("sncs/temp/water", "1", rfm, mqtt_c, 60)
-        fake_t_heat = Remote("sncs/temp/heater", "1", rfm, mqtt_c, 60)
-
-        fake_humi = Remote("sncs/humi", "1", rfm, mqtt_c, 60)
-        fake_lumi = Remote("sncs/lumi", "1", rfm, mqtt_c, 60)
-
-        fake_door = Remote("sncs/doors", "1", rfm, mqtt_c, 60)
-
-        fake_leak = Remote("warn/leak", "1", rfm, mqtt_c, 60)
-        fake_smoke = Remote("warn/smoke", "1", rfm, mqtt_c, 60)
-        fake_flame = Remote("warn/flame", "1", rfm, mqtt_c, 60)
-
-        fake_pres = Remote("pres/pres", "1", rfm, mqtt_c, 60)
-        fake_mot = Remote("pres/motion", "1", rfm, mqtt_c, 60)
-
-        fake_cntr = Remote("cntrs", "1", rfm, mqtt_c, 60)
-
-        fake_relay = Remote("devices/relays", "1", rfm, mqtt_c, 60)
+        # fake_t_air = Remote("sncs/temp/air", "1", rfm, mqtt_client, 60)
+        # fake_t_wat = Remote("sncs/temp/water", "1", rfm, mqtt_client, 60)
+        # fake_t_heat = Remote("sncs/temp/heater", "1", rfm, mqtt_client, 60)
+        #
+        # fake_humi = Remote("sncs/humi", "1", rfm, mqtt_client, 60)
+        # fake_lumi = Remote("sncs/lumi", "1", rfm, mqtt_client, 60)
+        #
+        # fake_door = Remote("sncs/doors", "1", rfm, mqtt_c, 60)
+        #
+        # fake_leak = Remote("warn/leak", "1", rfm, mqtt_c, 60)
+        # fake_smoke = Remote("warn/smoke", "1", rfm, mqtt_c, 60)
+        # fake_flame = Remote("warn/flame", "1", rfm, mqtt_c, 60)
+        #
+        # fake_pres = Remote("pres/pres", "1", rfm, mqtt_c, 60)
+        # fake_mot = Remote("pres/motion", "1", rfm, mqtt_c, 60)
+        #
+        fake_cntr = Remote("cntrs", "1", rfm, mqtt_client, 60)
+        #
+        fake_relay = Remote("devices/relays", "1", rfm, mqtt_client, 60)
     except Exception as e:
-        log.warn("Init fux")
+        log.error("Init fux")
         raise(e)
 
     try:
