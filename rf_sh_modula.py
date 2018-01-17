@@ -87,7 +87,7 @@ def mqtt_init():
 class Remote:
     def __init__(self, d_type, name, rfm, mqtt_c, d_timeout):
         #Тип устройства (датчик/исполнитель) (str)
-        __types_sncs = [#-------------------------------------------#
+        __types_sncs = [
                     "sncs/temp/air", "sncs/temp/water", "sncs/temp/heater",
                     "sncs/lumi", "sncs/humi", "sncs/doors",
                     "warn/leak", "warn/smoke", "warn/flame",
@@ -101,10 +101,9 @@ class Remote:
                     "devices/dimmers/curt", "devices/dimmers/stepper",
                     "devices/dimmers/trmrl"
                     ]
+
         try:
-            if ((__types_sncs.index(d_type) != None) or
-                (__types_cntrs.index(d_type) != None) or
-                (__types_devices.index(d_type) != None)):
+            if ((__types_sncs.index(d_type) != None) or (__types_cntrs.index(d_type) != None) or (__types_devices.index(d_type) != None)):
                 self.d_type = d_type
         except Exception as e:
             log.warn("Invalid device type")
