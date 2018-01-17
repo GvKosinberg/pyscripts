@@ -102,14 +102,15 @@ class Remote:
                 self.d_type = d_type
         except Exception as e:
             log.warn("Invalid device type")
-        if self.d_type == "devices/relays" or self.d_type == "devices/dimmers":
-            self.mqtt_c.subscribe("oh/"+self.d_type+self.name)
         #Имя (str)
         self.name = name
         #Экземпляр класса rfm69 (rfm69)
         self.rfm = rfm
         #Экземпляр клиента mqtt
         self.mqtt_c = mqtt_c
+        if self.d_type == "devices/relays" or self.d_type == "devices/dimmers":
+            self.mqtt_c.subscribe("oh/"+self.d_type+self.name)
+
         #Данные
         self.data = "-"
         #Время последнего полученного ответа
