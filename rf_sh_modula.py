@@ -98,10 +98,10 @@ class Remote:
                     "cntrs"
                     }
         __types_devices = {
-                    relays: "devices/relays",
-                    dimmers: "devices/dimmers/crane",
+                    relays: ["devices/relays"],
+                    dimmers: ["devices/dimmers/crane",
                     "devices/dimmers/curt", "devices/dimmers/stepper",
-                    "devices/dimmers/trmrl"
+                    "devices/dimmers/trmrl"]
                     }
         if ((d_type in __types_sncs.values) or
             (d_type in __types_cntrs.values) or
