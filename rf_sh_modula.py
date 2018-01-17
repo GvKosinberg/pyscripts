@@ -91,7 +91,7 @@ class Remote:
                     "sncs/temp/air", "sncs/temp/water", "sncs/temp/heater",
                     "sncs/lumi", "sncs/humi", "sncs/doors",
                     "warn/leak", "warn/smoke", "warn/flame",
-                    "pres/pres", "pres/motion", "FAKE",
+                    "pres/pres", "pres/motion", "FAKE"
                     ]
         __types_cntrs = [
                     "cntrs"
