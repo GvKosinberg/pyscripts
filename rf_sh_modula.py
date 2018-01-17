@@ -69,7 +69,7 @@ def mqtt_init():
     log.debug("B4 conn")
     mqtt_client.connect("localhost", 1883, 60)
     log.debug("aftr conn")
-    mqtt_client.subscribe("oh/#")
+    mqtt.subscribe("oh/#")
     #mqtt_client.loop_forever()
 
 """
