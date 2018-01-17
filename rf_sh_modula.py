@@ -45,7 +45,7 @@ def mqtt_on_connect(client, userdata, flags, rc):
     '''
         При подключении к порту брокера
     '''
-    #client.subscribe("oh/#")
+    client.subscribe("oh/#")
     log.info("Connected to MQTT with rc: %s" %rc)
 
 def mqtt_on_message(client, userdata, msg):
@@ -66,10 +66,10 @@ def mqtt_init():
     mqtt_client.on_message = mqtt_on_message
     mqtt_client.on_disconnect = mqtt_on_disconnect
 
-    log.debug("B4 conn")
     mqtt_client.connect("localhost", 1883, 60)
-    log.debug("aftr conn")
-    mqtt.subscribe("oh/#")
+    log.debug("start loop")
+    mqtt_client.loop_start()
+    #mqtt.subscribe("oh/#")
     #mqtt_client.loop_forever()
 
 """
