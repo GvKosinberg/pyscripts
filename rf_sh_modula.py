@@ -66,7 +66,9 @@ def mqtt_init():
     mqtt_client.on_message = mqtt_on_message
     mqtt_client.on_disconnect = mqtt_on_disconnect
 
+    log.debug("B4 conn")
     mqtt_client.connect("localhost", 1883, 60)
+    log.debug("aftr conn")
     mqtt_client.subscribe("oh/#")
     #mqtt_client.loop_forever()
 
