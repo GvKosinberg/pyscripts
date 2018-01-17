@@ -45,6 +45,7 @@ def mqtt_on_connect(client, userdata, flags, rc):
     '''
         При подключении к порту брокера
     '''
+    client.subscribe("oh/#")
     log.info("Connected to MQTT with rc: %s" %rc)
 
 def mqtt_on_message(client, userdata, msg):
