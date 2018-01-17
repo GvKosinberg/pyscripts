@@ -125,8 +125,8 @@ class Remote:
         self.error_cnt = 0
 
     #TEMP: place for rand fux
-    def write2device(self, cl, toppo, datto):
-        log.debug("SEND to: %s NUDES: %s" %(toppo, datto))
+    def write2device(self, clnt, usrdt, msg):
+        log.debug("SEND to: %s NUDES: %s" %(msg.topic, msg.payload))
 
     """
         Метод проверки timeout'а ответа
