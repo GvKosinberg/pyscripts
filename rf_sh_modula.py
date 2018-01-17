@@ -57,7 +57,7 @@ def mqtt_init():
     mqtt_client.on_message = mqtt_on_message
 
     mqtt_client.connect("localhost", 1883, 60)
-    client.subscribe("oh/devices/relays/#")
+    mqtt_client.subscribe("oh/devices/relays/#")
     #mqtt_client.loop_forever()
 
 """
