@@ -17,6 +17,28 @@ import time
 import random
 
 """
+    Ne zabud' etu huitu
+"""
+__types_sncs = {
+            'sncs': ["sncs/temp/air", "sncs/temp/water", "sncs/temp/heater",
+                    "sncs/lumi", "sncs/humi"],
+            'doors': ["sncs/doors"],
+            'warns': ["warn/leak", "warn/smoke", "warn/flame"],
+            'pres': ["pres/pres", "pres/motion"]
+            }
+__types_cntrs = {
+            'cntrs': ["cntrs"]
+            }
+__types_devices = {
+            'relays': ["devices/relays"],
+            'dimmers': ["devices/dimmers/crane",
+            "devices/dimmers/curt", "devices/dimmers/stepper",
+            "devices/dimmers/trmrl"]
+            }
+
+
+
+"""
     Подключение консольного логера
 """
 import logging
@@ -87,22 +109,6 @@ def mqtt_init():
 class Remote:
     def __init__(self, d_type, name, rfm, mqtt_c, d_timeout):
         #Тип устройства (датчик/исполнитель) (str)
-        __types_sncs = {
-                    'sncs': ["sncs/temp/air", "sncs/temp/water", "sncs/temp/heater",
-                            "sncs/lumi", "sncs/humi"],
-                    'doors': ["sncs/doors"],
-                    'warns': ["warn/leak", "warn/smoke", "warn/flame"],
-                    'pres': ["pres/pres", "pres/motion"]
-                    }
-        __types_cntrs = {
-                    'cntrs': ["cntrs"]
-                    }
-        __types_devices = {
-                    'relays': ["devices/relays"],
-                    'dimmers': ["devices/dimmers/crane",
-                    "devices/dimmers/curt", "devices/dimmers/stepper",
-                    "devices/dimmers/trmrl"]
-                    }
         if ((d_type in __types_sncs.values) or
             (d_type in __types_cntrs.values) or
             (d_type in __types_devices.values)):
