@@ -115,9 +115,10 @@ class Remote:
         self.rfm = rfm
         #Экземпляр клиента mqtt
         self.mqtt_c = mqtt_c
+        #Если это исполнительное устройство, подписаться на изменения топика
         if (self.d_type in __types_devices):
             self.mqtt_c.subscribe(self.topic)
-            self.mqtt_c.on_message=self.write2device
+            self.mqtt_c.message_callback_add(self.topic, self.write2device)
 
         #Данные
         self.data = "-"
