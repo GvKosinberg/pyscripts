@@ -200,14 +200,14 @@ if __name__ == "__main__":
         fake_humi = Remote("sncs/humi", "1", rfm, mqtt_client, 60)
         fake_lumi = Remote("sncs/lumi", "1", rfm, mqtt_client, 60)
 
-        fake_door = Remote("sncs/doors", "1", rfm, mqtt_c, 60)
+        fake_door = Remote("sncs/doors", "1", rfm, mqtt_client, 60)
 
-        fake_leak = Remote("warn/leak", "1", rfm, mqtt_c, 60)
-        fake_smoke = Remote("warn/smoke", "1", rfm, mqtt_c, 60)
-        fake_flame = Remote("warn/flame", "1", rfm, mqtt_c, 60)
+        fake_leak = Remote("warn/leak", "1", rfm, mqtt_client, 60)
+        fake_smoke = Remote("warn/smoke", "1", rfm, mqtt_client, 60)
+        fake_flame = Remote("warn/flame", "1", rfm, mqtt_client, 60)
 
-        fake_pres = Remote("pres/pres", "1", rfm, mqtt_c, 60)
-        fake_mot = Remote("pres/motion", "1", rfm, mqtt_c, 60)
+        fake_pres = Remote("pres/pres", "1", rfm, mqtt_client, 60)
+        fake_mot = Remote("pres/motion", "1", rfm, mqtt_client, 60)
 
         fake_cntr = Remote("cntrs", "1", rfm, mqtt_client, 60)
 
