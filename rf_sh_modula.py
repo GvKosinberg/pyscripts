@@ -9,7 +9,7 @@ import os, sys
 
 #TODO: uncomment 4 realz
 import rfm69
-import paho.mqtt.publish as mqpb
+import paho.mqtt.client as mqtt
 
 import time
 
@@ -37,6 +37,26 @@ def init_rfm():
 	#setting RSSI treshold
     rfm_unit.set_rssi_threshold(-114)
     return rfm_unit
+
+"""
+    Инициализация клента mqtt-брокера
+"""
+def mqtt_on_connect(client, userdata, flags, rc):
+    '''
+        При подключении к порту брокера
+    '''
+    log.info("Connected to MQTT with rc: %s" %rc)
+
+def mqtt_on_message(client, userdata, msg):
+    log.debug("Message recived. Topic: %s, Msg: %s", %(msg.topic, msg.payload))
+
+def mqtt_init():
+    mqtt_client = mqtt.Client()
+    mqtt_client.on_connect = mqtt_on_connect
+    mqtt_client.on_message = mqtt_on_message
+
+    mqtt_client.connect("localhost", 1883, 60)
+    mqtt_client.loop_forever()
 
 """
     Класс управляемых устройств и сенсоров
@@ -105,7 +125,7 @@ class Device:
         self.data = self.get_random_state()
 
         mqtt_val = self.data
-        mqpb.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
+        mqtt.publish.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
 
         log.info('Obj: %s: val: %s ' %(mqtt_topic, mqtt_val))
         #.print('Last responce: %s' %str(self.last_responce))
@@ -114,6 +134,9 @@ class Device:
         Метод отправки значения на исполнительное устройство
     """
     def write2control(self):
+        pass
+
+    def sub_mq(self):
         pass
 
     #TEMP: random generator for tests
@@ -153,6 +176,7 @@ class Device:
 #DEBUG: just 4 tests
 if __name__ == "__main__":
     rfm = init_rfm()
+    mqtt_init()
     try:
         fake_t_air = Device("sncs/temp/air", "1", rfm, 60)
         fake_t_wat = Device("sncs/temp/water", "1", rfm, 60)
@@ -171,35 +195,37 @@ if __name__ == "__main__":
         fake_mot = Device("pres/motion", "1", rfm, 60)
 
         fake_cntr = Device("cntrs", "1", rfm, 60)
+
+        fake_relay = Device("devices/relays", "1", rfm, 60)
     except Exception as e:
         log.warn("Init fux")
         raise(e)
 
     try:
+        pass
+        # while(True):
+            #log.info("Current time: %s" %time.ctime())
 
-        while(True):
-            log.info("Current time: %s" %time.ctime())
+            # fake_t_air.write2mqtt()
+            # fake_t_wat.write2mqtt()
+            # fake_t_heat.write2mqtt()
+            #
+            # fake_humi.write2mqtt()
+            # fake_lumi.write2mqtt()
+            #
+            # fake_door.write2mqtt()
+            #
+            # fake_leak.write2mqtt()
+            # fake_smoke.write2mqtt()
+            # fake_flame.write2mqtt()
+            #
+            # fake_pres.write2mqtt()
+            # fake_mot.write2mqtt()
+            #
+            # fake_cntr.write2mqtt()
 
-            fake_t_air.write2mqtt()
-            fake_t_wat.write2mqtt()
-            fake_t_heat.write2mqtt()
-
-            fake_humi.write2mqtt()
-            fake_lumi.write2mqtt()
-
-            fake_door.write2mqtt()
-
-            fake_leak.write2mqtt()
-            fake_smoke.write2mqtt()
-            fake_flame.write2mqtt()
-
-            fake_pres.write2mqtt()
-            fake_mot.write2mqtt()
-
-            fake_cntr.write2mqtt()
-
-            log.info("#=========================#")
-            time.sleep(5)
+            #log.info("#=========================#")
+            #time.sleep(5)
 
     except KeyboardInterrupt:
         log.info("That's all, folks")
