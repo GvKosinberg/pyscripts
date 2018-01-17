@@ -48,7 +48,7 @@ def mqtt_on_connect(client, userdata, flags, rc):
     log.info("Connected to MQTT with rc: %s" %rc)
 
 def mqtt_on_message(client, userdata, msg):
-    log.debug("Message recived. Topic: %s, Msg: %s", %(msg.topic, msg.payload))
+    log.debug("Message recived. Topic: %s, Msg: %s" %(msg.topic, msg.payload))
 
 def mqtt_init():
     mqtt_client = mqtt.Client()
