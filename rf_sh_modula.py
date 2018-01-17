@@ -206,32 +206,32 @@ class Remote:
 if __name__ == "__main__":
     rfm = init_rfm()
     mqtt_client = mqtt_init()
-    try:
-        log.info("Init of devices")
-        fake_t_air = Remote("sncs/temp/air", "1", rfm, mqtt_client, 60)
-        fake_t_wat = Remote("sncs/temp/water", "1", rfm, mqtt_client, 60)
-        fake_t_heat = Remote("sncs/temp/heater", "1", rfm, mqtt_client, 60)
+    # try:
+    log.info("Init of devices")
+    fake_t_air = Remote("sncs/temp/air", "1", rfm, mqtt_client, 60)
+    fake_t_wat = Remote("sncs/temp/water", "1", rfm, mqtt_client, 60)
+    fake_t_heat = Remote("sncs/temp/heater", "1", rfm, mqtt_client, 60)
 
-        fake_humi = Remote("sncs/humi", "1", rfm, mqtt_client, 60)
-        fake_lumi = Remote("sncs/lumi", "1", rfm, mqtt_client, 60)
+    fake_humi = Remote("sncs/humi", "1", rfm, mqtt_client, 60)
+    fake_lumi = Remote("sncs/lumi", "1", rfm, mqtt_client, 60)
 
-        fake_door = Remote("sncs/doors", "1", rfm, mqtt_client, 60)
+    fake_door = Remote("sncs/doors", "1", rfm, mqtt_client, 60)
 
-        fake_leak = Remote("warn/leak", "1", rfm, mqtt_client, 60)
-        fake_smoke = Remote("warn/smoke", "1", rfm, mqtt_client, 60)
-        fake_flame = Remote("warn/flame", "1", rfm, mqtt_client, 60)
+    fake_leak = Remote("warn/leak", "1", rfm, mqtt_client, 60)
+    fake_smoke = Remote("warn/smoke", "1", rfm, mqtt_client, 60)
+    fake_flame = Remote("warn/flame", "1", rfm, mqtt_client, 60)
 
-        fake_pres = Remote("pres/pres", "1", rfm, mqtt_client, 60)
-        fake_mot = Remote("pres/motion", "1", rfm, mqtt_client, 60)
+    fake_pres = Remote("pres/pres", "1", rfm, mqtt_client, 60)
+    fake_mot = Remote("pres/motion", "1", rfm, mqtt_client, 60)
 
-        fake_cntr = Remote("cntrs", "1", rfm, mqtt_client, 60)
+    fake_cntr = Remote("cntrs", "1", rfm, mqtt_client, 60)
 
-        fake_crane = Remote("devices/dimmers/crane", "1", rfm, mqtt_client, 60)
-        fake_trm_relay = Remote("devices/dimmers/trmrl", "1", rfm, mqtt_client, 60)
-        fake_relay = Remote("devices/relays", "1", rfm, mqtt_client, 60)
-    except Exception as e:
-        log.error("Init fux")
-        raise(e)
+    fake_crane = Remote("devices/dimmers/crane", "1", rfm, mqtt_client, 60)
+    fake_trm_relay = Remote("devices/dimmers/trmrl", "1", rfm, mqtt_client, 60)
+    fake_relay = Remote("devices/relays", "1", rfm, mqtt_client, 60)
+    # except Exception as e:
+    #     log.error("Init fux")
+    #     raise(e)
 
     try:
         log.info("Enter the cycle")
