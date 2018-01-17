@@ -87,21 +87,24 @@ def mqtt_init():
 class Remote:
     def __init__(self, d_type, name, rfm, mqtt_c, d_timeout):
         #Тип устройства (датчик/исполнитель) (str)
-        __types = [#-------------------------------------------#
+        __types_sncs = [#-------------------------------------------#
                     "sncs/temp/air", "sncs/temp/water", "sncs/temp/heater",
                     "sncs/lumi", "sncs/humi", "sncs/doors",
                     "warn/leak", "warn/smoke", "warn/flame",
                     "pres/pres", "pres/motion", "FAKE",
-                    #------------------------------------------#
-                    "cntrs",
-                    #------------------------------------------#
+                    ]
+        __types_cntrs = [
+                    "cntrs"
+                    ]
+        __types_devices = [
                     "devices/relays", "devices/dimmers/crane",
                     "devices/dimmers/curt", "devices/dimmers/stepper",
                     "devices/dimmers/trmrl"
                     ]
-
         try:
-            if (__types.index(d_type) != None):
+            if ((__types_sncs.index(d_type) != None) or
+                (__types_cntrs.index(d_type) != None) or
+                (__types_devices.index(d_type) != None)):
                 self.d_type = d_type
         except Exception as e:
             log.warn("Invalid device type")
@@ -113,7 +116,7 @@ class Remote:
         self.rfm = rfm
         #Экземпляр клиента mqtt
         self.mqtt_c = mqtt_c
-        if self.d_type == "devices/relays" or self.d_type == "devices/dimmers":
+        if (__types_devices.index(d_type) != None):
             self.mqtt_c.subscribe(self.topic)
             self.mqtt_c.on_message=self.write2device
 
