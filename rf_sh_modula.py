@@ -112,7 +112,7 @@ class Remote:
         self.mqtt_c = mqtt_c
         if self.d_type == "devices/relays" or self.d_type == "devices/dimmers":
             self.mqtt_c.subscribe(self.topic)
-            self.mqtt_c.on_message=self.write2device(cl, toppo, datto)
+            self.mqtt_c.on_message=self.write2device
 
         #Данные
         self.data = "-"
