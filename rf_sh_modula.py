@@ -45,7 +45,6 @@ def mqtt_on_connect(client, userdata, flags, rc):
     '''
         При подключении к порту брокера
     '''
-    client.subscribe("oh/#")
     log.info("Connected to MQTT with rc: %s" %rc)
 
 def mqtt_on_message(client, userdata, msg):
@@ -55,11 +54,18 @@ def mqtt_on_message(client, userdata, msg):
     log.debug("Message recived. Topic: %s, Msg: %s" %(msg.topic, msg.payload))
 
 def mqtt_on_disconnect(client, userdata, rc):
+    '''
+        При отключении от брокера
+    '''
     if rc != 0:
         log.warn("Unexpected disconnection")
     else:
         log.info("Expected disconnection")
 
+"""
+    Функция инициализации клиента mqtt
+    на выходе - объект класса mqtt.client
+"""
 def mqtt_init():
     mqtt_client = mqtt.Client()
     mqtt_client.on_connect = mqtt_on_connect
@@ -69,18 +75,17 @@ def mqtt_init():
     mqtt_client.connect("localhost", 1883, 60)
     log.debug("start loop")
     mqtt_client.loop_start()
-    #mqtt.subscribe("oh/#")
-    #mqtt_client.loop_forever()
+    return mqtt_client
 
 """
-    Класс управляемых устройств и сенсоров
+    Класс сенсоров/исполнительных устройств
     d_type - тип устройства для записи в формате топика mqtt (string)
     name - собственное имя устройства (или номер) (string)
     rfm - объект RFM69 (rfm)
     d_timeout - таймаут ответа от устройства в секундах (int)
 """
-class Device:
-    def __init__(self, d_type, name, rfm, d_timeout):
+class Remote:
+    def __init__(self, d_type, name, rfm, mqtt_c, d_timeout):
         #Тип устройства (датчик/исполнитель) (str)
         __types = [#-------------------------------------------#
                     "sncs/temp/air", "sncs/temp/water", "sncs/temp/heater",
@@ -97,12 +102,14 @@ class Device:
                 self.d_type = d_type
         except Exception as e:
             log.warn("Invalid device type")
-        #Идентификатор группы устройств (str)
-        # self.id = id_grp
+        if self.d_type == "devices/relays" or self.d_type == "devices/dimmers":
+            self.mqtt_c.subscribe("oh/"+self.d_type+self.name)
         #Имя (str)
         self.name = name
         #Экземпляр класса rfm69 (rfm69)
         self.rfm = rfm
+        #Экземпляр клиента mqtt
+        self.mqtt_c = mqtt_c
         #Данные
         self.data = "-"
         #Время последнего полученного ответа
@@ -139,19 +146,11 @@ class Device:
         self.data = self.get_random_state()
 
         mqtt_val = self.data
-        mqtt.publish.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
+        self.mqtt_c.publish.single(mqtt_topic, mqtt_val)
 
         log.debug('Obj: %s: val: %s ' %(mqtt_topic, mqtt_val))
         #.print('Last responce: %s' %str(self.last_responce))
 
-    """
-        Метод отправки значения на исполнительное устройство
-    """
-    def write2control(self):
-        pass
-
-    def sub_mq(self):
-        pass
 
     #TEMP: random generator for tests
     def get_random_state(self):
@@ -166,7 +165,7 @@ class Device:
                         "sncs/humi": [0, 100],
                         "FAKE": [0, 3378],
         }
-        __defas = {
+        __definitions = {
                         "sncs/doors": ["OPEN", "CLOSED"],
                          "pres/pres": ["HIGH", "LOW"],
                          "pres/motion": ["HIGH", "LOW"],
@@ -174,9 +173,9 @@ class Device:
                          "warn/smoke": ["HIGH", "LOW"],
                          "warn/flame": ["HIGH", "LOW"]
                  }
-        if __defas.get(self.d_type) != None:
+        if __definitions.get(self.d_type) != None:
             state = random.randint(0,1)
-            out = __defas[self.d_type][state]
+            out = __definitions[self.d_type][state]
         elif __val_float_limits.get(self.d_type) != None:
             out = random.uniform(__val_float_limits[self.d_type][0],
                                 __val_float_limits[self.d_type][1])
@@ -190,28 +189,28 @@ class Device:
 #DEBUG: just 4 tests
 if __name__ == "__main__":
     rfm = init_rfm()
-    mqtt_init()
+    mqtt_c = mqtt_init()
     try:
         log.info("Init of devices")
-        fake_t_air = Device("sncs/temp/air", "1", rfm, 60)
-        fake_t_wat = Device("sncs/temp/water", "1", rfm, 60)
-        fake_t_heat = Device("sncs/temp/heater", "1", rfm, 60)
+        fake_t_air = Remote("sncs/temp/air", "1", rfm, mqtt_c, 60)
+        fake_t_wat = Remote("sncs/temp/water", "1", rfm, mqtt_c, 60)
+        fake_t_heat = Remote("sncs/temp/heater", "1", rfm, mqtt_c, 60)
 
-        fake_humi = Device("sncs/humi", "1", rfm, 60)
-        fake_lumi = Device("sncs/lumi", "1", rfm, 60)
+        fake_humi = Remote("sncs/humi", "1", rfm, mqtt_c, 60)
+        fake_lumi = Remote("sncs/lumi", "1", rfm, mqtt_c, 60)
 
-        fake_door = Device("sncs/doors", "1", rfm, 60)
+        fake_door = Remote("sncs/doors", "1", rfm, mqtt_c, 60)
 
-        fake_leak = Device("warn/leak", "1", rfm, 60)
-        fake_smoke = Device("warn/smoke", "1", rfm, 60)
-        fake_flame = Device("warn/flame", "1", rfm, 60)
+        fake_leak = Remote("warn/leak", "1", rfm, mqtt_c, 60)
+        fake_smoke = Remote("warn/smoke", "1", rfm, mqtt_c, 60)
+        fake_flame = Remote("warn/flame", "1", rfm, mqtt_c, 60)
 
-        fake_pres = Device("pres/pres", "1", rfm, 60)
-        fake_mot = Device("pres/motion", "1", rfm, 60)
+        fake_pres = Remote("pres/pres", "1", rfm, mqtt_c, 60)
+        fake_mot = Remote("pres/motion", "1", rfm, mqtt_c, 60)
 
-        fake_cntr = Device("cntrs", "1", rfm, 60)
+        fake_cntr = Remote("cntrs", "1", rfm, mqtt_c, 60)
 
-        fake_relay = Device("devices/relays", "1", rfm, 60)
+        fake_relay = Remote("devices/relays", "1", rfm, mqtt_c, 60)
     except Exception as e:
         log.warn("Init fux")
         raise(e)
