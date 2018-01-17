@@ -109,7 +109,7 @@ class Remote:
         #Экземпляр клиента mqtt
         self.mqtt_c = mqtt_c
         if self.d_type == "devices/relays" or self.d_type == "devices/dimmers":
-            self.mqtt_c.subscribe("oh/"+self.d_type+self.name)
+            self.mqtt_c.subscribe("oh/"+self.d_type+"/"+self.name)
 
         #Данные
         self.data = "-"
@@ -221,23 +221,23 @@ if __name__ == "__main__":
         while(True):
             log.info("Current time: %s" %time.ctime())
 
-            # fake_t_air.write2mqtt()
-            # fake_t_wat.write2mqtt()
-            # fake_t_heat.write2mqtt()
-            #
-            # fake_humi.write2mqtt()
-            # fake_lumi.write2mqtt()
-            #
-            # fake_door.write2mqtt()
-            #
-            # fake_leak.write2mqtt()
-            # fake_smoke.write2mqtt()
-            # fake_flame.write2mqtt()
-            #
-            # fake_pres.write2mqtt()
-            # fake_mot.write2mqtt()
-            #
-            # fake_cntr.write2mqtt()
+            fake_t_air.write2mqtt()
+            fake_t_wat.write2mqtt()
+            fake_t_heat.write2mqtt()
+
+            fake_humi.write2mqtt()
+            fake_lumi.write2mqtt()
+
+            fake_door.write2mqtt()
+
+            fake_leak.write2mqtt()
+            fake_smoke.write2mqtt()
+            fake_flame.write2mqtt()
+
+            fake_pres.write2mqtt()
+            fake_mot.write2mqtt()
+
+            fake_cntr.write2mqtt()
 
             log.info("#=========================#")
             time.sleep(5)
