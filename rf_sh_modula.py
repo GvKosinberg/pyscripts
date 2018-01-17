@@ -45,7 +45,7 @@ def mqtt_on_connect(client, userdata, flags, rc):
     '''
         При подключении к порту брокера
     '''
-    client.subscribe("oh/#")
+    #client.subscribe("oh/#")
     log.info("Connected to MQTT with rc: %s" %rc)
 
 def mqtt_on_message(client, userdata, msg):
@@ -57,7 +57,8 @@ def mqtt_init():
     mqtt_client.on_message = mqtt_on_message
 
     mqtt_client.connect("localhost", 1883, 60)
-    mqtt_client.loop_forever()
+    client.subscribe("oh/devices/relays/#")
+    #mqtt_client.loop_forever()
 
 """
     Класс управляемых устройств и сенсоров
@@ -128,7 +129,7 @@ class Device:
         mqtt_val = self.data
         mqtt.publish.single(mqtt_topic, mqtt_val, hostname="localhost", port=1883)
 
-        log.info('Obj: %s: val: %s ' %(mqtt_topic, mqtt_val))
+        log.debug('Obj: %s: val: %s ' %(mqtt_topic, mqtt_val))
         #.print('Last responce: %s' %str(self.last_responce))
 
     """
