@@ -101,12 +101,11 @@ class Remote:
                     "devices/dimmers/curt", "devices/dimmers/stepper",
                     "devices/dimmers/trmrl"
                     ]
-        try:
-            if ((__types_sncs.index(d_type) != None) or
-                (__types_cntrs.index(d_type) != None) or
-                (__types_devices.index(d_type) != None)):
-                self.d_type = d_type
-        except Exception as e:
+        if ((d_type in __types_sncs) or
+            (d_type in __types_cntrs) or
+            (d_type in __types_devices)):
+            self.d_type = d_type
+        else:
             log.warn("Invalid device type: %s" %d_type)
         #Имя (str)
         self.name = name
