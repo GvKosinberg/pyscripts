@@ -88,18 +88,18 @@ class Remote:
     def __init__(self, d_type, name, rfm, mqtt_c, d_timeout):
         #Тип устройства (датчик/исполнитель) (str)
         __types_sncs = {
-                    sncs: ["sncs/temp/air", "sncs/temp/water", "sncs/temp/heater",
+                    'sncs': ["sncs/temp/air", "sncs/temp/water", "sncs/temp/heater",
                             "sncs/lumi", "sncs/humi"],
-                    doors: ["sncs/doors"],
-                    warns: ["warn/leak", "warn/smoke", "warn/flame"],
-                    pres: ["pres/pres", "pres/motion"]
+                    'doors': ["sncs/doors"],
+                    'warns': ["warn/leak", "warn/smoke", "warn/flame"],
+                    'pres': ["pres/pres", "pres/motion"]
                     }
         __types_cntrs = {
-                    "cntrs"
+                    'cntrs': ["cntrs"]
                     }
         __types_devices = {
-                    relays: ["devices/relays"],
-                    dimmers: ["devices/dimmers/crane",
+                    'relays': ["devices/relays"],
+                    'dimmers': ["devices/dimmers/crane",
                     "devices/dimmers/curt", "devices/dimmers/stepper",
                     "devices/dimmers/trmrl"]
                     }
@@ -135,9 +135,9 @@ class Remote:
     #TEMP: place for rand fux
     def write2device(self, clnt, usrdt, msg):
         log.debug("SENT from: %s NUDES: %s" %(msg.topic, msg.payload))
-        if self.d_type in __types_devices.get(relays):
+        if self.d_type in __types_devices.get('relays'):
             log.debug("SENDING %s to relay" %msg.payload)
-        elif self.d_type in __types_devices.get(relays):
+        elif self.d_type in __types_devices.get('dimmers'):
             log.debug("SENDING %s to crane" %msg.payload)
 
 
