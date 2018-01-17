@@ -87,23 +87,25 @@ def mqtt_init():
 class Remote:
     def __init__(self, d_type, name, rfm, mqtt_c, d_timeout):
         #Тип устройства (датчик/исполнитель) (str)
-        __types_sncs = [
-                    "sncs/temp/air", "sncs/temp/water", "sncs/temp/heater",
-                    "sncs/lumi", "sncs/humi", "sncs/doors",
-                    "warn/leak", "warn/smoke", "warn/flame",
-                    "pres/pres", "pres/motion", "FAKE"
-                    ]
-        __types_cntrs = [
+        __types_sncs = {
+                    sncs: ["sncs/temp/air", "sncs/temp/water", "sncs/temp/heater",
+                            "sncs/lumi", "sncs/humi"],
+                    doors: ["sncs/doors"],
+                    warns: ["warn/leak", "warn/smoke", "warn/flame"],
+                    pres: ["pres/pres", "pres/motion"]
+                    }
+        __types_cntrs = {
                     "cntrs"
-                    ]
-        __types_devices = [
-                    "devices/relays", "devices/dimmers/crane",
+                    }
+        __types_devices = {
+                    relays: "devices/relays",
+                    dimmers: "devices/dimmers/crane",
                     "devices/dimmers/curt", "devices/dimmers/stepper",
                     "devices/dimmers/trmrl"
-                    ]
-        if ((d_type in __types_sncs) or
-            (d_type in __types_cntrs) or
-            (d_type in __types_devices)):
+                    }
+        if ((d_type in __types_sncs.values) or
+            (d_type in __types_cntrs.values) or
+            (d_type in __types_devices.values)):
             self.d_type = d_type
         else:
             log.warn("Invalid device type: %s" %d_type)
@@ -116,7 +118,7 @@ class Remote:
         #Экземпляр клиента mqtt
         self.mqtt_c = mqtt_c
         #Если это исполнительное устройство, подписаться на изменения топика
-        if (self.d_type in __types_devices):
+        if (self.d_type in __types_devices.values):
             self.mqtt_c.subscribe(self.topic)
             self.mqtt_c.message_callback_add(self.topic, self.write2device)
 
@@ -133,9 +135,9 @@ class Remote:
     #TEMP: place for rand fux
     def write2device(self, clnt, usrdt, msg):
         log.debug("SENT from: %s NUDES: %s" %(msg.topic, msg.payload))
-        if self.d_type == "devices/relays":
+        if self.d_type in __types_devices.get(relays):
             log.debug("SENDING %s to relay" %msg.payload)
-        elif self.d_type == "devices/dimmers/crane":
+        elif self.d_type in __types_devices.get(relays):
             log.debug("SENDING %s to crane" %msg.payload)
 
 
@@ -178,7 +180,6 @@ class Remote:
         __val_int_limits = {
                         "cntrs": [100, 500],
                         "sncs/humi": [0, 100],
-                        "FAKE": [0, 3378],
         }
         __definitions = {
                         "sncs/doors": ["OPEN", "CLOSED"],
