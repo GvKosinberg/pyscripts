@@ -147,7 +147,7 @@ class Remote:
         self.data = self.get_random_state()
 
         mqtt_val = self.data
-        self.mqtt_c.publish.single(mqtt_topic, mqtt_val)
+        self.mqtt_c.publish(mqtt_topic, mqtt_val)
 
         log.debug('Obj: %s: val: %s ' %(mqtt_topic, mqtt_val))
         #.print('Last responce: %s' %str(self.last_responce))
