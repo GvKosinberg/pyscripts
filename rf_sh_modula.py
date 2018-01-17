@@ -95,7 +95,10 @@ class Remote:
                     #------------------------------------------#
                     "cntrs",
                     #------------------------------------------#
-                    "devices/relays", "devices/dimmers"]
+                    "devices/relays", "devices/dimmers/crane",
+                    "devices/dimmers/curt", "devices/dimmers/stepper",
+                    "devices/dimmers/trmrl"
+                    ]
 
         try:
             if (__types.index(d_type) != None):
@@ -220,6 +223,7 @@ if __name__ == "__main__":
         fake_cntr = Remote("cntrs", "1", rfm, mqtt_client, 60)
 
         fake_relay = Remote("devices/relays", "1", rfm, mqtt_client, 60)
+        fake_trm_relay = Remote("devices/dimmers/trmrl", "1", rfm, mqtt_client, 60)
         fake_crane = Remote("devices/dimmers/crane", "1", rfm, mqtt_client, 60)
     except Exception as e:
         log.error("Init fux")
