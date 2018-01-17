@@ -51,7 +51,7 @@ def mqtt_on_message(client, userdata, msg):
     '''
         При поступлении сообщения
     '''
-    log.debug("Message recived. Topic: %s, Msg: %s" %(msg.topic, msg.payload))
+    #log.debug("Message recived. Topic: %s, Msg: %s" %(msg.topic, msg.payload))
 
 def mqtt_on_disconnect(client, userdata, rc):
     '''
@@ -104,12 +104,14 @@ class Remote:
             log.warn("Invalid device type")
         #Имя (str)
         self.name = name
+        #Название топика
+        self.topic = "oh/"+self.d_type+"/"+self.name
         #Экземпляр класса rfm69 (rfm69)
         self.rfm = rfm
         #Экземпляр клиента mqtt
         self.mqtt_c = mqtt_c
         if self.d_type == "devices/relays" or self.d_type == "devices/dimmers":
-            self.mqtt_c.subscribe("oh/"+self.d_type+"/"+self.name)
+            self.mqtt_c.subscribe(self.topic)
 
         #Данные
         self.data = "-"
@@ -122,8 +124,8 @@ class Remote:
         self.error_cnt = 0
 
     #TEMP: place for rand fux
-    def sumfunc(self):
-        pass
+    def write2device(self):
+        log.debug("SEND to: %s NUDES: %s" %(self.topic, self.data))
 
     """
         Метод проверки timeout'а ответа
@@ -139,7 +141,7 @@ class Remote:
         Метод записи полученного значения датчика в брокер
     """
     def write2mqtt(self):
-        mqtt_topic = "oh/" + self.d_type + "/" + self.name
+        mqtt_topic = self.topic
 
         self.check_timeout()
 
@@ -212,6 +214,7 @@ if __name__ == "__main__":
         fake_cntr = Remote("cntrs", "1", rfm, mqtt_client, 60)
 
         fake_relay = Remote("devices/relays", "1", rfm, mqtt_client, 60)
+        fake_trmdimmer = Remote("devices/relays", "2", rfm, mqtt_client, 60)
     except Exception as e:
         log.error("Init fux")
         raise(e)
