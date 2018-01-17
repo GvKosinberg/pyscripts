@@ -119,9 +119,9 @@ class Remote:
         self.rfm = rfm
         #Экземпляр клиента mqtt
         self.mqtt_c = mqtt_c
-        if (__types_devices.index(d_type) != None):
-            self.mqtt_c.subscribe(self.topic)
-            self.mqtt_c.on_message=self.write2device
+        # if (__types_devices.index(d_type) != None):
+        #     self.mqtt_c.subscribe(self.topic)
+        #     self.mqtt_c.on_message=self.write2device
 
         #Данные
         self.data = "-"
