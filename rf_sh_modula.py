@@ -178,6 +178,7 @@ if __name__ == "__main__":
     rfm = init_rfm()
     mqtt_init()
     try:
+        log.info("Init of devices")
         fake_t_air = Device("sncs/temp/air", "1", rfm, 60)
         fake_t_wat = Device("sncs/temp/water", "1", rfm, 60)
         fake_t_heat = Device("sncs/temp/heater", "1", rfm, 60)
@@ -202,9 +203,9 @@ if __name__ == "__main__":
         raise(e)
 
     try:
-        pass
-        # while(True):
-            #log.info("Current time: %s" %time.ctime())
+        log.info("Enter the cycle")
+        while(True):
+            log.info("Current time: %s" %time.ctime())
 
             # fake_t_air.write2mqtt()
             # fake_t_wat.write2mqtt()
@@ -224,8 +225,8 @@ if __name__ == "__main__":
             #
             # fake_cntr.write2mqtt()
 
-            #log.info("#=========================#")
-            #time.sleep(5)
+            log.info("#=========================#")
+            time.sleep(5)
 
     except KeyboardInterrupt:
         log.info("That's all, folks")
