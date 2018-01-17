@@ -126,7 +126,7 @@ class Remote:
 
     #TEMP: place for rand fux
     def write2device(self, clnt, usrdt, msg):
-        log.debug("SEND to: %s NUDES: %s" %(msg.topic, msg.payload))
+        log.debug("SENT from: %s NUDES: %s" %(msg.topic, msg.payload))
 
     """
         Метод проверки timeout'а ответа
@@ -215,7 +215,7 @@ if __name__ == "__main__":
         fake_cntr = Remote("cntrs", "1", rfm, mqtt_client, 60)
 
         fake_relay = Remote("devices/relays", "1", rfm, mqtt_client, 60)
-        fake_trmdimmer = Remote("devices/relays", "2", rfm, mqtt_client, 60)
+        #fake_trmdimmer = Remote("devices/relays", "2", rfm, mqtt_client, 60)
     except Exception as e:
         log.error("Init fux")
         raise(e)
