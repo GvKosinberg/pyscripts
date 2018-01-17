@@ -49,15 +49,25 @@ def mqtt_on_connect(client, userdata, flags, rc):
     log.info("Connected to MQTT with rc: %s" %rc)
 
 def mqtt_on_message(client, userdata, msg):
+    '''
+        При поступлении сообщения
+    '''
     log.debug("Message recived. Topic: %s, Msg: %s" %(msg.topic, msg.payload))
+
+def mqtt_on_disconnect(client, userdata, rc):
+    if rc != 0:
+        log.warn("Unexpected disconnection")
+    else:
+        log.info("Expected disconnection")
 
 def mqtt_init():
     mqtt_client = mqtt.Client()
     mqtt_client.on_connect = mqtt_on_connect
     mqtt_client.on_message = mqtt_on_message
+    mqtt_client.on_disconnect = mqtt_on_disconnect
 
     mqtt_client.connect("localhost", 1883, 60)
-    mqtt_client.subscribe("oh/devices/relays/#")
+    mqtt_client.subscribe("oh/#")
     #mqtt_client.loop_forever()
 
 """
