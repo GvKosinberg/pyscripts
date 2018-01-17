@@ -69,7 +69,7 @@ def mqtt_on_disconnect(client, userdata, rc):
 def mqtt_init():
     mqtt_client = mqtt.Client()
     mqtt_client.on_connect = mqtt_on_connect
-    mqtt_client.on_message = mqtt_on_message
+    #mqtt_client.on_message = mqtt_on_message
     mqtt_client.on_disconnect = mqtt_on_disconnect
 
     mqtt_client.connect("localhost", 1883, 60)
@@ -112,6 +112,7 @@ class Remote:
         self.mqtt_c = mqtt_c
         if self.d_type == "devices/relays" or self.d_type == "devices/dimmers":
             self.mqtt_c.subscribe(self.topic)
+            self.mqtt_c.on_message=write2device(cl, toppo, datto)
 
         #Данные
         self.data = "-"
@@ -124,8 +125,8 @@ class Remote:
         self.error_cnt = 0
 
     #TEMP: place for rand fux
-    def write2device(self):
-        log.debug("SEND to: %s NUDES: %s" %(self.topic, self.data))
+    def write2device(self, cl, toppo, datto):
+        log.debug("SEND to: %s NUDES: %s" %(toppo, datto))
 
     """
         Метод проверки timeout'а ответа
