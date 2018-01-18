@@ -110,7 +110,7 @@ class Device:
         if self.d_type=='RELAY':
             log.debug("AMA RELAY: %s, VAL: %s" %(self.name, msg.payload))
         else:
-            log.debug("AMA: %s, VAL: %s" %(self.d_type, msg.payload))
+            log.debug("AMA: %s:%s, VAL: %s" %(self.d_type, self.name, msg.payload))
 
 class Sencor:
     def __init__(self, d_type, name, rfm, mqtt_c, timeout):
