@@ -223,11 +223,11 @@ if __name__ == "__main__":
 
     fake_cntr = Sencor("CNTR", "1", rfm, mqtt_client, 60)
 
-    fake_relay = Device("RELAY", "1", rfm, mqtt_client, 60)
-    fake_crane = Device("DIM_CRANE", "1", rfm, mqtt_client, 60)
-    fake_curt = Device("DIM_CURT", "1", rfm, mqtt_client, 60)
-    fake_step = Device("DIM_STEP", "1", rfm, mqtt_client, 60)
-    fake_trmrl = Device("DIM_TRMRL", "1", rfm, mqtt_client, 60)
+    fake_relay = Device("RELAY", "1", rfm, mqtt_client)
+    fake_crane = Device("DIM_CRANE", "1", rfm, mqtt_client)
+    fake_curt = Device("DIM_CURT", "1", rfm, mqtt_client)
+    fake_step = Device("DIM_STEP", "1", rfm, mqtt_client)
+    fake_trmrl = Device("DIM_TRMRL", "1", rfm, mqtt_client)
 
     # except Exception as e:
     #     log.error("Init fux")
