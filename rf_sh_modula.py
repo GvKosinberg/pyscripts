@@ -84,62 +84,59 @@ def mqtt_init():
     rfm - объект RFM69 (rfm)
     d_timeout - таймаут ответа от устройства в секундах (int)
 """
-class Remote:
-    def __init__(self, d_type, name, rfm, mqtt_c, d_timeout):
-        #Тип устройства (датчик/исполнитель) (str)
-        __types_sncs = {
-                    'sncs': ["sncs/temp/air", "sncs/temp/water", "sncs/temp/heater",
-                            "sncs/lumi", "sncs/humi"],
-                    'doors': ["sncs/doors"],
-                    'warns': ["warn/leak", "warn/smoke", "warn/flame"],
-                    'pres': ["pres/pres", "pres/motion"]
-                    }
-        __types_cntrs = {
-                    'cntrs': ["cntrs"]
-                    }
+class Device:
+    def __init__(self, d_type, name, rfm, mqtt_c):
         __types_devices = {
-                    'relays': ["devices/relays"],
-                    'dimmers': ["devices/dimmers/crane",
-                    "devices/dimmers/curt", "devices/dimmers/stepper",
-                    "devices/dimmers/trmrl"]
-                    }
-        if ((d_type in __types_sncs.values()) or
-            (d_type in __types_cntrs.values()) or
-            (d_type in __types_devices.values())):
+                        'RELAY': "devices/relays/",
+                        'DIM_CRANE': "devices/dimmers/crane/",
+                        'DIM_CURT': "devices/dimmers/curt/",
+                        'DIM_STEP': "devices/dimmers/stepper/",
+                        'DIM_TRMRL': "devices/dimmers/trmrl/",
+        }
+        if d_type in __types_devices:
+            self.rfm = rfm
+            self.mqtt_c = mqtt_c
             self.d_type = d_type
-        else:
-            log.warn("Invalid device type: %s" %d_type)
-        #Имя (str)
-        self.name = name
-        #Название топика
-        self.topic = "oh/"+self.d_type+"/"+self.name
-        #Экземпляр класса rfm69 (rfm69)
-        self.rfm = rfm
-        #Экземпляр клиента mqtt
-        self.mqtt_c = mqtt_c
-        #Если это исполнительное устройство, подписаться на изменения топика
-        if (self.d_type in __types_devices.values()):
+            self.name = name
+            self.topic = "oh/"+__types_devices[d_type]+name
             self.mqtt_c.subscribe(self.topic)
             self.mqtt_c.message_callback_add(self.topic, self.write2device)
-
-        #Данные
-        self.data = "-"
-        #Время последнего полученного ответа
-        self.last_responce = time.time()
-        #Таймаут получения ответа (в секундах)
-        self.d_timeout = d_timeout
-        #TODO: Dobavit' identificator v list proverki rfm'a
-        #Счетчик ошибок
-        self.error_cnt = 0
+        else:
+            log.error("Invalid device type: %s", %d_type)
 
     #TEMP: place for rand fux
     def write2device(self, clnt, usrdt, msg):
         log.debug("SENT from: %s NUDES: %s" %(msg.topic, msg.payload))
-        if self.d_type in __types_devices.get('relays'):
-            log.debug("SENDING %s to relay" %msg.payload)
-        elif self.d_type in __types_devices.get('dimmers'):
-            log.debug("SENDING %s to crane" %msg.payload)
+        if self.d_type=='RELAY':
+            log.debug("AMA RELAY: %s, VAL: %s" %(self.name, msg.payload))
+        else:
+            log.debug("AMA: %s, VAL: %s" %(self.d_type, msg.payload))
 
+class Sencor:
+    def __init__(self, d_type, name, rfm, mqtt_c, timeout):
+        __types_sncs = {
+                        'SNC_T_AIR': "oh/sncs/temp/air/",
+                        'SNC_T_WATER': "oh/sncs/temp/water/",
+                        'SNC_T_HEATER': "oh/sncs/temp/heater/",
+                        'SNC_HUMI': "oh/sncs/humi/",
+                        'SNC_LUMI': "oh/sncs/lumi/",
+                        'SNC_DOOR': "oh/sncs/doors",
+                        'WARN_LEAK': "oh/warn/leak/",
+                        'WARN_SMOKE': "oh/warn/smoke/",
+                        'WARN_FLAME': "oh/warn/flame/",
+                        'PRES_PRES': "oh/pres/pres/",
+                        'PRES_MOT': "oh/pres/motion/",
+                        'CNTR': "oh/cntrs/"
+        }
+        if d_type in __types_sencors:
+            self.rfm = rfm
+            self.mqtt_c = mqtt_c
+            self.d_type = d_type
+            self.name = name
+            self.topic = __types_sencors[d_type]+name
+            self.timeout = timeout
+        else:
+            log.error("Invalid device type: %s", %d_type)
 
     """
         Метод проверки timeout'а ответа
@@ -172,30 +169,30 @@ class Remote:
     #TEMP: random generator for tests
     def get_random_state(self):
         __val_float_limits = {
-                        "sncs/temp/air": [19.00, 25.00],
-                        "sncs/temp/water": [5.00, 22.00],
-                        "sncs/temp/heater": [50.00, 100.00],
-                        "sncs/lumi": [150.00, 300.00],
+                        "SNC_T_AIR": [19.00, 25.00],
+                        "SNC_T_WATER": [5.00, 22.00],
+                        "SNC_T_HEATER": [50.00, 100.00],
+                        "SNC_LUMI": [150.00, 300.00],
                     }
         __val_int_limits = {
-                        "cntrs": [100, 500],
-                        "sncs/humi": [0, 100],
+                        "CNTR": [100, 500],
+                        "SNC_HUMI": [0, 100],
         }
         __definitions = {
-                        "sncs/doors": ["OPEN", "CLOSED"],
-                         "pres/pres": ["HIGH", "LOW"],
-                         "pres/motion": ["HIGH", "LOW"],
-                         "warn/leak": ["HIGH", "LOW"],
-                         "warn/smoke": ["HIGH", "LOW"],
-                         "warn/flame": ["HIGH", "LOW"]
+                        "SNC_DOOR": ["OPEN", "CLOSED"],
+                         "PRES_PRES": ["HIGH", "LOW"],
+                         "PRES_MOT": ["HIGH", "LOW"],
+                         "WARN_LEAK": ["HIGH", "LOW"],
+                         "WARN_SMOKE": ["HIGH", "LOW"],
+                         "WARN_FLAME": ["HIGH", "LOW"]
                  }
-        if __definitions.get(self.d_type) != None:
+        if d_type in __definitions:
             state = random.randint(0,1)
             out = __definitions[self.d_type][state]
-        elif __val_float_limits.get(self.d_type) != None:
+        elif d_type in __val_float_limits:
             out = random.uniform(__val_float_limits[self.d_type][0],
                                 __val_float_limits[self.d_type][1])
-        elif __val_int_limits.get(self.d_type) != None:
+        elif d_type in __val_int_limits:
             out = random.randint(__val_int_limits[self.d_type][0],
                                 __val_int_limits[self.d_type][1])
 
@@ -208,27 +205,30 @@ if __name__ == "__main__":
     mqtt_client = mqtt_init()
     # try:
     log.info("Init of devices")
-    fake_t_air = Remote("sncs/temp/air", "1", rfm, mqtt_client, 60)
-    fake_t_wat = Remote("sncs/temp/water", "1", rfm, mqtt_client, 60)
-    fake_t_heat = Remote("sncs/temp/heater", "1", rfm, mqtt_client, 60)
+    fake_t_air = Sencor("SNC_T_AIR", "1", rfm, mqtt_client, 60)
+    fake_t_wat = Sencor("SNC_T_WATER", "1", rfm, mqtt_client, 60)
+    fake_t_heat = Sencor("SNC_T_HEATER", "1", rfm, mqtt_client, 60)
 
-    fake_humi = Remote("sncs/humi", "1", rfm, mqtt_client, 60)
-    fake_lumi = Remote("sncs/lumi", "1", rfm, mqtt_client, 60)
+    fake_humi = Sencor("SNC_HUMI", "1", rfm, mqtt_client, 60)
+    fake_lumi = Sencor("SNC_LUMI", "1", rfm, mqtt_client, 60)
 
-    fake_door = Remote("sncs/doors", "1", rfm, mqtt_client, 60)
+    fake_door = Sencor("SNC_DOOR", "1", rfm, mqtt_client, 60)
 
-    fake_leak = Remote("warn/leak", "1", rfm, mqtt_client, 60)
-    fake_smoke = Remote("warn/smoke", "1", rfm, mqtt_client, 60)
-    fake_flame = Remote("warn/flame", "1", rfm, mqtt_client, 60)
+    fake_leak = Sencor("WARN_LEAK", "1", rfm, mqtt_client, 60)
+    fake_smoke = Sencor("WARN_SMOKE", "1", rfm, mqtt_client, 60)
+    fake_flame = Sencor("WARN_FLAME", "1", rfm, mqtt_client, 60)
 
-    fake_pres = Remote("pres/pres", "1", rfm, mqtt_client, 60)
-    fake_mot = Remote("pres/motion", "1", rfm, mqtt_client, 60)
+    fake_pres = Sencor("PRES_PRES", "1", rfm, mqtt_client, 60)
+    fake_mot = Sencor("PRES_MOT", "1", rfm, mqtt_client, 60)
 
-    fake_cntr = Remote("cntrs", "1", rfm, mqtt_client, 60)
+    fake_cntr = Sencor("CNTR", "1", rfm, mqtt_client, 60)
 
-    fake_crane = Remote("devices/dimmers/crane", "1", rfm, mqtt_client, 60)
-    fake_trm_relay = Remote("devices/dimmers/trmrl", "1", rfm, mqtt_client, 60)
-    fake_relay = Remote("devices/relays", "1", rfm, mqtt_client, 60)
+    fake_relay = Device("RELAY", "1", rfm, mqtt_client, 60)
+    fake_crane = Device("DIM_CRANE", "1", rfm, mqtt_client, 60)
+    fake_curt = Device("DIM_CURT", "1", rfm, mqtt_client, 60)
+    fake_step = Device("DIM_STEP", "1", rfm, mqtt_client, 60)
+    fake_trmrl = Device("DIM_TRMRL", "1", rfm, mqtt_client, 60)
+
     # except Exception as e:
     #     log.error("Init fux")
     #     raise(e)
