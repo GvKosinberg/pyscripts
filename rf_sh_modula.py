@@ -1,58 +1,71 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
-#Author: Antipin S.O. @RLDA
+# Author: Antipin S.O. @RLDA
 
 """
     Подключение необходимых модулей
 """
-import os, sys
+import os
+import sys
 import gc
 
-#TODO: uncomment 4 realz
 import rfm69
 import paho.mqtt.client as mqtt
 
 import time
 
-#DEBUG: dev_stuff
+# DEBUG: dev_stuff
 import random
+import logging
+
 
 """
     Подключение консольного логера
 """
-import logging
+
+
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger("rf_sh_modula")
 
+
 """
-	Инициализация RFM69
-	На выходе объект класса rfm69
+    Инициализация RFM69
+    На выходе объект класса rfm69
 """
+
+
 def init_rfm():
-    #TEMP: faek rfm unit
-    #rfm_unit = "sum_sh1et"
-    ##_____#
+    # TEMP: faek rfm unit
+    # rfm_unit = "sum_sh1et"
+    #
     myconf = rfm69.RFM69Configuration()
-    rfm_unit = rfm69.RFM69(dio0_pin=24, reset_pin=22, spi_channel = 0,
-                            config = myconf)
-	#setting RSSI treshold
+    rfm_unit = rfm69.RFM69(
+        dio0_pin=24,
+        reset_pin=22,
+        spi_channel=0,
+        config=myconf)
+    # setting RSSI treshold
     rfm_unit.set_rssi_threshold(-114)
     return rfm_unit
+
 
 """
     Инициализация клента mqtt-брокера
 """
+
+
 def mqtt_on_connect(client, userdata, flags, rc):
     '''
         При подключении к порту брокера
     '''
-    log.info("Connected to MQTT with rc: %s" %rc)
+    log.info("Connected to MQTT with rc: %s" % rc)
+
 
 def mqtt_on_message(client, userdata, msg):
     '''
         При поступлении сообщения
     '''
-    #log.debug("Message recived. Topic: %s, Msg: %s" %(msg.topic, msg.payload))
+
 
 def mqtt_on_disconnect(client, userdata, rc):
     '''
@@ -63,20 +76,24 @@ def mqtt_on_disconnect(client, userdata, rc):
     else:
         log.info("Expected disconnection")
 
+
 """
     Функция инициализации клиента mqtt
     на выходе - объект класса mqtt.client
 """
+
+
 def mqtt_init():
     mqtt_client = mqtt.Client()
     mqtt_client.on_connect = mqtt_on_connect
-    #mqtt_client.on_message = mqtt_on_message
+    # mqtt_client.on_message = mqtt_on_message
     mqtt_client.on_disconnect = mqtt_on_disconnect
 
     mqtt_client.connect("localhost", 1883, 60)
     log.debug("start loop")
     mqtt_client.loop_start()
     return mqtt_client
+
 
 """
     Класс исполнительных устройств
@@ -85,6 +102,8 @@ def mqtt_init():
     rfm - экземпляр RFM69
     mqtt_c - экземпляр paho.mqtt.Client
 """
+
+
 class Device:
     '''
         Инициализация объекта
@@ -102,25 +121,27 @@ class Device:
             self.mqtt_c = mqtt_c
             self.d_type = d_type
             self.name = name
-            #топик в mqtt-брокере
+            # топик в mqtt-брокере
             self.topic = "oh/"+__types_devices[d_type]+name
-            #подписка на топик
+            # подписка на топик
             self.mqtt_c.subscribe(self.topic)
-            #Создание event в случае поступления сообщения в топик
-            #NOTE: работает даже в time.sleep, rfm.wait_for_packet
+            # Создание event в случае поступления сообщения в топик
+            # NOTE: работает даже в time.sleep, rfm.wait_for_packet
             self.mqtt_c.message_callback_add(self.topic, self.write2device)
         else:
-            log.error("Invalid device type: %s" %d_type)
+            log.error("Invalid device type: %s" % d_type)
 
     '''
         Функция отправки команды на конечное устройство
     '''
     def write2device(self, clnt, usrdt, msg):
-        log.debug("SENT from: %s NUDES: %s" %(msg.topic, msg.payload))
-        if self.d_type=='RELAY':
-            log.debug("AMA RELAY: %s, VAL: %s" %(self.name, msg.payload))
+        log.debug("SENT from: %s NUDES: %s" % (msg.topic, msg.payload))
+        if self.d_type == 'RELAY':
+            log.debug("AMA RELAY: %s, VAL: %s" % (self.name, msg.payload))
         else:
-            log.debug("AMA: %s:%s, VAL: %s" %(self.d_type, self.name, msg.payload))
+            log.debug("AMA: %s:%s, VAL: %s" % (
+                self.d_type, self.name, msg.payload))
+
 
 """
     Класс исполнительных устройств
@@ -130,6 +151,8 @@ class Device:
     mqtt_c - экземпляр paho.mqtt.Client
     timeout - время таймаута
 """
+
+
 class Sencor:
     '''
         Инициализация объекта
@@ -154,46 +177,48 @@ class Sencor:
             self.mqtt_c = mqtt_c
             self.d_type = d_type
             self.name = name
-            #топик в mqtt-брокере
+            # топик в mqtt-брокере
             self.topic = __types_sncs[d_type]+name
-            #таймаут ответа
+            # таймаут ответа
             self.d_timeout = timeout
-            #время последнего ответа (*nix-style)
+            # время последнего ответа (*nix-style)
             self.last_responce = time.time()
         else:
-            log.error("Invalid device type: %s" %d_type)
+            log.error("Invalid device type: %s" % d_type)
 
-    """
+    '''
         Метод проверки timeout'а ответа
         если ответа не было дольше, чем timout сек,
         то устанавливает data = "-" (на странице в openhab'е - "ОШИБКА")
-    """
+    '''
+
     def check_timeout(self):
         razn = time.time() - self.last_responce
         if razn > self.d_timeout:
             self.data = "-"
-        log.debug("Sencor: %s: time between responces: %s"
-                % ((self.d_type+":"+self.name), razn))
+        log.debug("Sencor: %s: time between responces: %s" % (
+            (self.d_type+":"+self.name),
+            razn))
 
-    """
+    '''
         Метод записи полученного значения датчика в брокер
-    """
+    '''
+
     def write2mqtt(self):
         mqtt_topic = self.topic
 
         self.check_timeout()
 
-        #TEMP: random data
+        # TEMP: random data
         self.data = self.get_random_state()
 
         mqtt_val = self.data
         self.mqtt_c.publish(mqtt_topic, mqtt_val)
 
-        log.debug('SNC: %s: VAL: %s ' %(mqtt_topic, mqtt_val))
-        #.print('Last responce: %s' %str(self.last_responce))
+        log.debug('SNC: %s: VAL: %s ' % (mqtt_topic, mqtt_val))
+        # print('Last responce: %s' %str(self.last_responce))
 
-
-    #TEMP: random generator for tests
+    # TEMP: random generator for tests
     def get_random_state(self):
         __val_float_limits = {
                         "SNC_T_AIR": [19.00, 25.00],
@@ -207,32 +232,37 @@ class Sencor:
         }
         __definitions = {
                         "SNC_DOOR": ["OPEN", "CLOSED"],
-                         "PRES_PRES": ["HIGH", "LOW"],
-                         "PRES_MOT": ["HIGH", "LOW"],
-                         "WARN_LEAK": ["HIGH", "LOW"],
-                         "WARN_SMOKE": ["HIGH", "LOW"],
-                         "WARN_FLAME": ["HIGH", "LOW"]
+                        "PRES_PRES": ["HIGH", "LOW"],
+                        "PRES_MOT": ["HIGH", "LOW"],
+                        "WARN_LEAK": ["HIGH", "LOW"],
+                        "WARN_SMOKE": ["HIGH", "LOW"],
+                        "WARN_FLAME": ["HIGH", "LOW"]
                  }
         if self.d_type in __definitions:
-            state = random.randint(0,1)
+            state = random.randint(0, 1)
             out = __definitions[self.d_type][state]
         elif self.d_type in __val_float_limits:
-            out = random.uniform(__val_float_limits[self.d_type][0],
-                                __val_float_limits[self.d_type][1])
+            out = random.uniform(
+                __val_float_limits[self.d_type][0],
+                __val_float_limits[self.d_type][1])
         elif self.d_type in __val_int_limits:
-            out = random.randint(__val_int_limits[self.d_type][0],
-                                __val_int_limits[self.d_type][1])
+            out = random.randint(
+                __val_int_limits[self.d_type][0],
+                __val_int_limits[self.d_type][1])
 
         self.last_responce = time.time()
         return out
+
 
 """
     Функция чтения занчений с rfm
     если ничего не поступило, функция записи в mqtt все равно будет вызвана,
     т.к. там есть метод проверки таймаута ответа
 """
+
+
 def read_real(rfm, snc_list):
-    #коды типов устройств и соответствующие им ключи
+    # коды типов устройств и соответствующие им ключи
     __types = {
                 '0': "TEMP_AIR",
                 '3': "SNC_LUMI",
@@ -241,43 +271,46 @@ def read_real(rfm, snc_list):
     r_type = "-"
     r_name = "-"
 
-    #Ожидание сообщения
+    # Ожидание сообщения
     inc_data = rfm.wait_for_packet(15)
 
-    #Проверка данных (если данные не пришли type(inc_data!=None))
-    #если ответ пришел, данные записываются в кортеж
+    # Проверка данных (если данные не пришли type(inc_data!=None))
+    # если ответ пришел, данные записываются в кортеж
     if type(inc_data) == tuple:
-        #адрес устройства
+        # адрес устройства
         d_addr = inc_data[0][3]
-        #код типа устройства
+        # код типа устройства
         d_type = inc_data[0][4]
-        #Младший байт данных
-        data_lb = inc_data[0][6]<<8
-        #Старший байт данных
+        # Младший байт данных
+        data_lb = inc_data[0][6] << 8
+        # Старший байт данных
         data_sb = inc_data[0][7]
-        #"Склеивание" байтов
+        # "Склеивание" байтов
         data_sum = data_lb | data_sb
 
-        #Проверка на наличие кода типа в списке
+        # Проверка на наличие кода типа в списке
         if d_type in __types:
-            #Присвоение ключа по коду
+            # Присвоение ключа по коду
             r_type = __types[d_type]
-            #Присвоение имени (string)
+            # Присвоение имени (string)
             r_name = str(d_addr)
 
-    #Проход списка объектов класса Sencor
+    # Проход списка объектов класса Sencor
     for obj in snc_list:
-        #Если имя и тип совпали с прочитанными на rfm
+        # Если имя и тип совпали с прочитанными на rfm
         if obj.d_type == r_type and obj.name == r_name:
             log.debug("FOUND !!1")
             obj.data = data_sum
-        #Вызов метода публикаци данных в брокере
+        # Вызов метода публикаци данных в брокере
         obj.write2mqtt()
+
 
 """
     Функция составления списка всех объектов класса Sencor
     на выходе - list[Sencor]
 """
+
+
 def get_snc_list():
     snc_list = []
     for obj in gc.get_objects():
@@ -285,7 +318,8 @@ def get_snc_list():
             snc_list.append(obj)
     return snc_list
 
-#DEBUG: just 4 tests
+
+# DEBUG: just 4 tests
 if __name__ == "__main__":
     rfm = init_rfm()
     mqtt_client = mqtt_init()
