@@ -202,7 +202,7 @@ class Sencor:
         return out
 
 def read_real(rfm, snc_list):
-	inc_data = rfm.wait_for_packet(15)
+    inc_data = rfm.wait_for_packet(15)
     __types = {
                 '0': "TEMP_AIR",
                 '3': "SNC_LUMI",
