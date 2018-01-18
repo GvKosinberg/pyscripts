@@ -120,7 +120,7 @@ class Sencor:
                         'SNC_T_HEATER': "oh/sncs/temp/heater/",
                         'SNC_HUMI': "oh/sncs/humi/",
                         'SNC_LUMI': "oh/sncs/lumi/",
-                        'SNC_DOOR': "oh/sncs/doors",
+                        'SNC_DOOR': "oh/sncs/doors/",
                         'WARN_LEAK': "oh/warn/leak/",
                         'WARN_SMOKE': "oh/warn/smoke/",
                         'WARN_FLAME': "oh/warn/flame/",
@@ -146,8 +146,8 @@ class Sencor:
         razn = time.time() - self.last_responce
         if razn > self.d_timeout:
             self.data = "-"
-        log.info("Device: %s: time between responces: %s"
-                % ((self.d_type+"/"+self.name), razn))
+        log.debug("Sencor: %s: time between responces: %s"
+                % ((self.d_type+":"+self.name), razn))
 
     """
         Метод записи полученного значения датчика в брокер
@@ -163,7 +163,7 @@ class Sencor:
         mqtt_val = self.data
         self.mqtt_c.publish(mqtt_topic, mqtt_val)
 
-        log.debug('Obj: %s: val: %s ' %(mqtt_topic, mqtt_val))
+        log.debug('SNC: %s: VAL: %s ' %(mqtt_topic, mqtt_val))
         #.print('Last responce: %s' %str(self.last_responce))
 
 
