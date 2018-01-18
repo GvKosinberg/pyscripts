@@ -202,12 +202,16 @@ class Sencor:
         return out
 
 def read_real(rfm, snc_list):
-    inc_data = rfm.wait_for_packet(15)
     __types = {
                 '0': "TEMP_AIR",
                 '3': "SNC_LUMI",
                 '3378': "ENCLAVE"
     }
+    r_type = "-"
+    r_name = "-"
+
+    inc_data = rfm.wait_for_packet(15)
+
     if type(inc_data) == tuple:
         d_addr = inc_data[0][3]
         d_type = inc_data[0][4]
@@ -215,14 +219,15 @@ def read_real(rfm, snc_list):
         data_sb = inc_data[0][7]
         data_sum = data_lb | data_sb
 
-    if d_type in __types:
-        r_type = __types[d_type]
-        r_name = str(d_addr)
-        for obj in snc_list:
-            if obj.d_type == r_type and obj.name == r_name:
-                log.debug("FOUND !!1")
-                obj.data = data_sum
-            obj.write2mqtt()
+        if d_type in __types:
+            r_type = __types[d_type]
+            r_name = str(d_addr)
+
+    for obj in snc_list:
+        if obj.d_type == r_type and obj.name == r_name:
+            log.debug("FOUND !!1")
+            obj.data = data_sum
+        obj.write2mqtt()
 
 def get_snc_list():
     snc_list = []
