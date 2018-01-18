@@ -133,7 +133,7 @@ class Sencor:
             self.mqtt_c = mqtt_c
             self.d_type = d_type
             self.name = name
-            self.topic = __types_sencors[d_type]+name
+            self.topic = __types_sncs[d_type]+name
             self.timeout = timeout
         else:
             log.error("Invalid device type: %s" %d_type)
