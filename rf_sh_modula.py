@@ -79,13 +79,16 @@ def mqtt_init():
     return mqtt_client
 
 """
-    Класс сенсоров/исполнительных устройств
-    d_type - тип устройства для записи в формате топика mqtt (string)
+    Класс исполнительных устройств
+    d_type - тип устройства в формате __types_devices (string)
     name - собственное имя устройства (или номер) (string)
-    rfm - объект RFM69 (rfm)
-    d_timeout - таймаут ответа от устройства в секундах (int)
+    rfm - экземпляр RFM69
+    mqtt_c - экземпляр paho.mqtt.Client
 """
 class Device:
+    '''
+        Инициализация объекта
+    '''
     def __init__(self, d_type, name, rfm, mqtt_c):
         __types_devices = {
                         'RELAY': "devices/relays/",
@@ -99,13 +102,19 @@ class Device:
             self.mqtt_c = mqtt_c
             self.d_type = d_type
             self.name = name
+            #топик в mqtt-брокере
             self.topic = "oh/"+__types_devices[d_type]+name
+            #подписка на топик
             self.mqtt_c.subscribe(self.topic)
+            #Создание event в случае поступления сообщения в топик
+            #NOTE: работает даже в time.sleep, rfm.wait_for_packet
             self.mqtt_c.message_callback_add(self.topic, self.write2device)
         else:
             log.error("Invalid device type: %s" %d_type)
 
-    #TEMP: place for rand fux
+    '''
+        Функция отправки команды на конечное устройство
+    '''
     def write2device(self, clnt, usrdt, msg):
         log.debug("SENT from: %s NUDES: %s" %(msg.topic, msg.payload))
         if self.d_type=='RELAY':
@@ -113,7 +122,18 @@ class Device:
         else:
             log.debug("AMA: %s:%s, VAL: %s" %(self.d_type, self.name, msg.payload))
 
+"""
+    Класс исполнительных устройств
+    d_type - тип устройства в формате __types_devices (string)
+    name - собственное имя устройства (или номер) (string)
+    rfm - экземпляр RFM69
+    mqtt_c - экземпляр paho.mqtt.Client
+    timeout - время таймаута
+"""
 class Sencor:
+    '''
+        Инициализация объекта
+    '''
     def __init__(self, d_type, name, rfm, mqtt_c, timeout):
         __types_sncs = {
                         'SNC_T_AIR': "oh/sncs/temp/air/",
@@ -134,14 +154,19 @@ class Sencor:
             self.mqtt_c = mqtt_c
             self.d_type = d_type
             self.name = name
+            #топик в mqtt-брокере
             self.topic = __types_sncs[d_type]+name
+            #таймаут ответа
             self.d_timeout = timeout
+            #время последнего ответа (*nix-style)
             self.last_responce = time.time()
         else:
             log.error("Invalid device type: %s" %d_type)
 
     """
         Метод проверки timeout'а ответа
+        если ответа не было дольше, чем timout сек,
+        то устанавливает data = "-" (на странице в openhab'е - "ОШИБКА")
     """
     def check_timeout(self):
         razn = time.time() - self.last_responce
@@ -201,7 +226,13 @@ class Sencor:
         self.last_responce = time.time()
         return out
 
+"""
+    Функция чтения занчений с rfm
+    если ничего не поступило, функция записи в mqtt все равно будет вызвана,
+    т.к. там есть метод проверки таймаута ответа
+"""
 def read_real(rfm, snc_list):
+    #коды типов устройств и соответствующие им ключи
     __types = {
                 '0': "TEMP_AIR",
                 '3': "SNC_LUMI",
@@ -210,25 +241,43 @@ def read_real(rfm, snc_list):
     r_type = "-"
     r_name = "-"
 
+    #Ожидание сообщения
     inc_data = rfm.wait_for_packet(15)
 
+    #Проверка данных (если данные не пришли type(inc_data!=None))
+    #если ответ пришел, данные записываются в кортеж
     if type(inc_data) == tuple:
+        #адрес устройства
         d_addr = inc_data[0][3]
+        #код типа устройства
         d_type = inc_data[0][4]
+        #Младший байт данных
         data_lb = inc_data[0][6]<<8
+        #Старший байт данных
         data_sb = inc_data[0][7]
+        #"Склеивание" байтов
         data_sum = data_lb | data_sb
 
+        #Проверка на наличие кода типа в списке
         if d_type in __types:
+            #Присвоение ключа по коду
             r_type = __types[d_type]
+            #Присвоение имени (string)
             r_name = str(d_addr)
 
+    #Проход списка объектов класса Sencor
     for obj in snc_list:
+        #Если имя и тип совпали с прочитанными на rfm
         if obj.d_type == r_type and obj.name == r_name:
             log.debug("FOUND !!1")
             obj.data = data_sum
+        #Вызов метода публикаци данных в брокере
         obj.write2mqtt()
 
+"""
+    Функция составления списка всех объектов класса Sencor
+    на выходе - list[Sencor]
+"""
 def get_snc_list():
     snc_list = []
     for obj in gc.get_objects():
