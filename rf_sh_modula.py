@@ -134,7 +134,7 @@ class Sencor:
             self.d_type = d_type
             self.name = name
             self.topic = __types_sncs[d_type]+name
-            self.timeout = timeout
+            self.d_timeout = timeout
             self.last_responce = time.time()
         else:
             log.error("Invalid device type: %s" %d_type)
