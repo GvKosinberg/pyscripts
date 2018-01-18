@@ -128,7 +128,7 @@ class Sencor:
                         'PRES_MOT': "oh/pres/motion/",
                         'CNTR': "oh/cntrs/"
         }
-        if d_type in __types_sencors:
+        if d_type in __types_sncs:
             self.rfm = rfm
             self.mqtt_c = mqtt_c
             self.d_type = d_type
