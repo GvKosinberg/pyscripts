@@ -208,8 +208,7 @@ def read_real(rfm, snc_list):
                 '3': "SNC_LUMI",
                 '3378': "ENCLAVE"
     }
-
-	if type(inc_data) == tuple :
+    if type(inc_data) == tuple:
         d_addr = inc_data[0][3]
         d_type = inc_data[0][4]
         data_lb = inc_data[0][6]<<8
