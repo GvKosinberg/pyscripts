@@ -39,21 +39,6 @@ def init_rfm():
     rfm_unit.set_rssi_threshold(-114)
     return rfm_unit
 
-
-def real2instace(r_type, r_name, r_data):
-# 		num_of_sncs = inc_data[0][4]
-# 		num_of_sncs_top = "sumnum/nss"
-# 		pbl.single(num_of_sncs_top, num_of_sncs, hostname="localhost", port=1883)
-#
-# 		print("num uv sncrs:", num_of_sncs)
-# 		for i in range(6, (6+(2*num_of_sncs)), 2):
-# 			sb = inc_data[0][i]<<8
-# 			lb = inc_data[0][i-1]
-# 			temp_snc_val = ((lb | sb)&0x3ff)/(4*1.0)
-# 			temp_snc_num = "sumnum/sncs/"+str((i-6)/2)
-# #			print(temp_snc_num)
-# 			pbl.single(temp_snc_num, temp_snc_val, hostname="localhost", port=1883)
-
 """
     Инициализация клента mqtt-брокера
 """
