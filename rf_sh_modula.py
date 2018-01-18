@@ -102,7 +102,7 @@ class Device:
             self.mqtt_c.subscribe(self.topic)
             self.mqtt_c.message_callback_add(self.topic, self.write2device)
         else:
-            log.error("Invalid device type: %s", %d_type)
+            log.error("Invalid device type: %s" %d_type)
 
     #TEMP: place for rand fux
     def write2device(self, clnt, usrdt, msg):
@@ -136,7 +136,7 @@ class Sencor:
             self.topic = __types_sencors[d_type]+name
             self.timeout = timeout
         else:
-            log.error("Invalid device type: %s", %d_type)
+            log.error("Invalid device type: %s" %d_type)
 
     """
         Метод проверки timeout'а ответа
