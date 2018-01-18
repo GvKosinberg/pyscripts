@@ -6,6 +6,7 @@
     Подключение необходимых модулей
 """
 import os, sys
+import gc
 
 #TODO: uncomment 4 realz
 import rfm69
@@ -37,6 +38,21 @@ def init_rfm():
 	#setting RSSI treshold
     rfm_unit.set_rssi_threshold(-114)
     return rfm_unit
+
+
+def real2instace(r_type, r_name, r_data):
+# 		num_of_sncs = inc_data[0][4]
+# 		num_of_sncs_top = "sumnum/nss"
+# 		pbl.single(num_of_sncs_top, num_of_sncs, hostname="localhost", port=1883)
+#
+# 		print("num uv sncrs:", num_of_sncs)
+# 		for i in range(6, (6+(2*num_of_sncs)), 2):
+# 			sb = inc_data[0][i]<<8
+# 			lb = inc_data[0][i-1]
+# 			temp_snc_val = ((lb | sb)&0x3ff)/(4*1.0)
+# 			temp_snc_num = "sumnum/sncs/"+str((i-6)/2)
+# #			print(temp_snc_num)
+# 			pbl.single(temp_snc_num, temp_snc_val, hostname="localhost", port=1883)
 
 """
     Инициализация клента mqtt-брокера
@@ -200,6 +216,37 @@ class Sencor:
         self.last_responce = time.time()
         return out
 
+def read_real(rfm, snc_list):
+	inc_data = rfm.wait_for_packet(15)
+    __types = {
+                '0': "TEMP_AIR",
+                '3': "SNC_LUMI",
+                '3378': "ENCLAVE"
+    }
+
+	if type(inc_data) == tuple :
+        d_addr = inc_data[0][3]
+        d_type = inc_data[0][4]
+        data_lb = inc_data[0][6]<<8
+        data_sb = inc_data[0][7]
+        data_sum = data_lb | data_sb
+
+    if d_type in __types:
+        r_type = __types[d_type]
+        r_name = str(d_addr)
+        for obj in snc_list:
+            if obj.d_type == r_type and obj.name == r_name:
+                log.debug("FOUND !!1")
+                obj.data = data_sum
+            obj.write2mqtt()
+
+def get_snc_list():
+    snc_list = []
+    for obj in gc.get_objects():
+        if isinstance(obj, Sencor):
+            snc_list.append(obj)
+    return snc_list
+
 #DEBUG: just 4 tests
 if __name__ == "__main__":
     rfm = init_rfm()
@@ -234,31 +281,10 @@ if __name__ == "__main__":
     #     log.error("Init fux")
     #     raise(e)
 
+    snc_list = get_snc_list()
     try:
         log.info("Enter the cycle")
         while(True):
-            log.info("Current time: %s" %time.ctime())
-
-            fake_t_air.write2mqtt()
-            fake_t_wat.write2mqtt()
-            fake_t_heat.write2mqtt()
-
-            fake_humi.write2mqtt()
-            fake_lumi.write2mqtt()
-
-            fake_door.write2mqtt()
-
-            fake_leak.write2mqtt()
-            fake_smoke.write2mqtt()
-            fake_flame.write2mqtt()
-
-            fake_pres.write2mqtt()
-            fake_mot.write2mqtt()
-
-            fake_cntr.write2mqtt()
-
-            log.info("#=========================#")
-            time.sleep(5)
-
+            read_real(rfm, snc_list)
     except KeyboardInterrupt:
         log.info("That's all, folks")
