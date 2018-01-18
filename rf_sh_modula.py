@@ -187,13 +187,13 @@ class Sencor:
                          "WARN_SMOKE": ["HIGH", "LOW"],
                          "WARN_FLAME": ["HIGH", "LOW"]
                  }
-        if d_type in __definitions:
+        if self.d_type in __definitions:
             state = random.randint(0,1)
             out = __definitions[self.d_type][state]
-        elif d_type in __val_float_limits:
+        elif self.d_type in __val_float_limits:
             out = random.uniform(__val_float_limits[self.d_type][0],
                                 __val_float_limits[self.d_type][1])
-        elif d_type in __val_int_limits:
+        elif self.d_type in __val_int_limits:
             out = random.randint(__val_int_limits[self.d_type][0],
                                 __val_int_limits[self.d_type][1])
 
