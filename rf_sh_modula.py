@@ -40,10 +40,10 @@ def init_rfm():
     #
     myconf = rfm69.RFM69Configuration()
     rfm_unit = rfm69.RFM69(
-        dio0_pin=24,
-        reset_pin=22,
-        spi_channel=0,
-        config=myconf)
+                            dio0_pin=24,
+                            reset_pin=22,
+                            spi_channel=0,
+                            config=myconf)
     # setting RSSI treshold
     rfm_unit.set_rssi_threshold(-114)
     return rfm_unit
@@ -358,5 +358,6 @@ if __name__ == "__main__":
         log.info("Enter the cycle")
         while(True):
             read_real(rfm, snc_list)
+            log.debug("//===========//")
     except KeyboardInterrupt:
         log.info("That's all, folks")
