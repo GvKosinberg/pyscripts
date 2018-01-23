@@ -21,8 +21,8 @@ if __name__ == '__main__':
         income = rfm.wait_for_packet(60)
         if type(income) == tuple:
             print(income)
-            sb = income[0][5]<<8
-            lb = income[0][4]
+            sb = income[0][4]<<8
+            lb = income[0][5]
             temp = ((lb | sb)&0x3ff)/(4*1.0)
             print("ASas = %s" % temp)
 
