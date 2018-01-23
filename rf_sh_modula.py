@@ -183,6 +183,8 @@ class Sencor:
             self.d_timeout = timeout
             # время последнего ответа (*nix-style)
             self.last_responce = time.time()
+            # Полезные данные
+            self.data = "-"
         else:
             log.error("Invalid device type: %s" % d_type)
 
