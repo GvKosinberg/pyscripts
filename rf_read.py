@@ -18,17 +18,20 @@ def init_rfm():
 if __name__ == '__main__':
     cnt_min = 0
     rfm = init_rfm()
-    while(True):
-        cnt_min += 1
-        print("Iter #: %s" % cnt_min)
-        income = rfm.wait_for_packet(60)
-        if type(income) == tuple:
-            print(income)
-            sb = income[0][5]<<8
-            lb = income[0][4]
-            if (income[0][2]==0):
-                temp = ((lb | sb)&0x3ff)/(16*1.0)
-                print("Temp = %s" % temp)
-            elif (income[0][2]==3):
-                lum = lb | sb
-                print("Lum = %s")
+    try:
+        while(True):
+            cnt_min += 1
+            print("Iter #: %s" % cnt_min)
+            income = rfm.wait_for_packet(60)
+            if type(income) == tuple:
+                print(income)
+                sb = income[0][5]<<8
+                lb = income[0][4]
+                if (income[0][2]==0):
+                    temp = ((lb | sb)&0x3ff)/(16*1.0)
+                    print("Temp = %s" % temp)
+                elif (income[0][2]==3):
+                    lum = lb | sb
+                    print("Lum = %s")
+    except KeyboardInterrupt:
+        print("That's all, folks")
