@@ -289,12 +289,18 @@ def read_real(rfm, snc_list):
         # Итоговые данные
         data_sum = 0
 
+        # XXX
+        log.info("d_adr: %s || d_type: %s" %(d_adr, d_type))
+
         # Проверка на наличие кода типа в списке
         if d_type in __types:
             # Присвоение ключа по коду
             r_type = __types[d_type]
             # Присвоение имени (string)
             r_name = str(d_addr)
+
+            log.info("r_type: %s || r_name: %s" %(r_type, r_name))
+
             if (r_type=="TEMP_AIR" and d_addr!=0xcd):
                 data_sum = ((lb | sb)&0xfff)/(16*1.0)
                 log.warn("hhir is tempa")
