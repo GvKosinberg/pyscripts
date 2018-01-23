@@ -25,10 +25,10 @@ if __name__ == '__main__':
             income = rfm.wait_for_packet(60)
             if type(income) == tuple:
                 print(income)
-                sb = income[0][5]<<8
-                lb = income[0][4]
+                sb = income[0][6]<<8
+                lb = income[0][5]
                 if (income[0][2]==0):
-                    temp = ((lb | sb)&0x3ff)/(16*1.0)
+                    temp = ((lb | sb)&0xfff)/(16*1.0)
                     print("Temp = %s" % temp)
                 elif (income[0][2]==3):
                     lum = lb | sb
