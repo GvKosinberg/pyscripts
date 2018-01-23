@@ -210,7 +210,8 @@ class Sencor:
         self.check_timeout()
 
         # TEMP: random data
-        # self.data = self.get_random_state()
+        if (self.d_type!='SNC_T_AIR' and self.d_type!='SNC_LUMI'):
+            self.data = self.get_random_state()
 
         mqtt_val = self.data
         self.mqtt_c.publish(mqtt_topic, mqtt_val)
@@ -294,7 +295,7 @@ def read_real(rfm, snc_list):
             r_type = __types[d_type]
             # Присвоение имени (string)
             r_name = str(d_addr)
-            if (r_type=="TEMP_AIR"):
+            if (r_type=="TEMP_AIR" and d_addr!=0xcd):
                 data_sum = ((lb | sb)&0xfff)/(16*1.0)
             elif (r_type=="SNC_LUMI"):
                 data_sum = lb | sb
