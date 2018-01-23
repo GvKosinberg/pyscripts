@@ -281,7 +281,7 @@ def read_real(rfm, snc_list):
         # адрес устройства
         d_addr = inc_data[0][1]
         # код типа устройства
-        d_type = inc_data[0][2]
+        d_type = str(inc_data[0][2])
         # Старший байт данных
         data_sb = inc_data[0][6] << 8
         # Младший байт данных
