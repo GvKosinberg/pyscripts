@@ -1,12 +1,6 @@
 import rfm69
 import logging
 
-
-"""
-    Подключение консольного логера
-"""
-
-
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger("rf_read")
 
