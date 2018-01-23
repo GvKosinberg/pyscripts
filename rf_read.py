@@ -28,8 +28,11 @@ if __name__ == '__main__':
                 sb = income[0][6]<<8
                 lb = income[0][5]
                 if (income[0][2]==0):
-                    temp = ((lb | sb)&0xfff)/(16*1.0)
-                    print("Temp = %s" % temp)
+                    if (income[0][1]==0xCD):
+                        print("ur not supposed 2 b here. LEVELORD")
+                    else:
+                        temp = ((lb | sb)&0xfff)/(16*1.0)
+                        print("Temp = %s" % temp)
                 elif (income[0][2]==3):
                     lum = lb | sb
                     print("Lum = %s")
