@@ -210,7 +210,7 @@ class Sencor:
         self.check_timeout()
 
         # TEMP: random data
-        self.data = self.get_random_state()
+        # self.data = self.get_random_state()
 
         mqtt_val = self.data
         self.mqtt_c.publish(mqtt_topic, mqtt_val)
@@ -278,21 +278,15 @@ def read_real(rfm, snc_list):
     # если ответ пришел, данные записываются в кортеж
     if type(inc_data) == tuple:
         # адрес устройства
-        d_addr = inc_data[0][3]
+        d_addr = inc_data[0][1]
         # код типа устройства
-        d_type = inc_data[0][4]
-        # Младший байт данных
-        data_lb = inc_data[0][6] << 8
+        d_type = inc_data[0][2]
         # Старший байт данных
-        data_sb = inc_data[0][7]
-        # "Склеивание" байтов
-        data_sum = data_lb | data_sb
-
-
-        # TEMP: LOGGO
-        log.debug("##======================##")
-        log.debug(str(data_sum))
-        log.debug("##======================##")
+        data_sb = inc_data[0][6] << 8
+        # Младший байт данных
+        data_lb = inc_data[0][5]
+        # Итоговые данные
+        data_sum = 0
 
         # Проверка на наличие кода типа в списке
         if d_type in __types:
@@ -300,15 +294,18 @@ def read_real(rfm, snc_list):
             r_type = __types[d_type]
             # Присвоение имени (string)
             r_name = str(d_addr)
+            if (r_type=="TEMP_AIR"):
+                data_sum = ((lb | sb)&0xfff)/(16*1.0)
+            elif (r_type=="SNC_LUMI"):
+                data_sum = lb | sb
 
     # Проход списка объектов класса Sencor
-    # for obj in snc_list:
-    #     # Если имя и тип совпали с прочитанными на rfm
-    #     if obj.d_type == r_type and obj.name == r_name:
-    #         log.debug("FOUND !!1")
-    #         obj.data = data_sum
-    #     # Вызов метода публикаци данных в брокере
-    #     obj.write2mqtt()
+    for obj in snc_list:
+        # Если имя и тип совпали с прочитанными на rfm
+        if obj.d_type == r_type and obj.name == "1":
+            obj.data = data_sum
+        # Вызов метода публикаци данных в брокере
+        obj.write2mqtt()
 
 
 """
