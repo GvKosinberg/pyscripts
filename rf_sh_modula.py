@@ -272,7 +272,7 @@ def read_real(rfm, snc_list):
     r_name = "-"
 
     # Ожидание сообщения
-    inc_data = rfm.wait_for_packet(15)
+    inc_data = rfm.wait_for_packet(60)
 
     # Проверка данных (если данные не пришли type(inc_data!=None))
     # если ответ пришел, данные записываются в кортеж
@@ -288,6 +288,12 @@ def read_real(rfm, snc_list):
         # "Склеивание" байтов
         data_sum = data_lb | data_sb
 
+
+        # TEMP: LOGGO
+        log.debug("##======================##")
+        log.debug(str(data_sum))
+        log.debug("##======================##")
+
         # Проверка на наличие кода типа в списке
         if d_type in __types:
             # Присвоение ключа по коду
@@ -296,13 +302,13 @@ def read_real(rfm, snc_list):
             r_name = str(d_addr)
 
     # Проход списка объектов класса Sencor
-    for obj in snc_list:
-        # Если имя и тип совпали с прочитанными на rfm
-        if obj.d_type == r_type and obj.name == r_name:
-            log.debug("FOUND !!1")
-            obj.data = data_sum
-        # Вызов метода публикаци данных в брокере
-        obj.write2mqtt()
+    # for obj in snc_list:
+    #     # Если имя и тип совпали с прочитанными на rfm
+    #     if obj.d_type == r_type and obj.name == r_name:
+    #         log.debug("FOUND !!1")
+    #         obj.data = data_sum
+    #     # Вызов метода публикаци данных в брокере
+    #     obj.write2mqtt()
 
 
 """
