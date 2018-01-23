@@ -23,7 +23,7 @@ if __name__ == '__main__':
             print(income)
             sb = income[0][6]<<8
             lb = income[0][5]
-            temp = ((lb | sb)&0x3ff)/(4*1.0)
+            temp = ((lb | sb)&0x3ff)/(16*1.0)
             print("ASas = %s" % temp)
 
             break
