@@ -1,8 +1,8 @@
 import rfm69
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
-log = logging.getLogger("rf_read")
+# logging.basicConfig(level=logging.DEBUG)
+# log = logging.getLogger("rf_read")
 
 def init_rfm():
     myconf = rfm69.RFM69Configuration()
@@ -16,8 +16,11 @@ def init_rfm():
     return rfm_unit
 
 if __name__ == '__main__':
+    cnt_min = 0
     rfm = init_rfm()
     while(True):
+        cnt_min += 1
+        print("Iter #: %s" % cnt_min)
         income = rfm.wait_for_packet(60)
         if type(income) == tuple:
             print(income)
@@ -29,5 +32,3 @@ if __name__ == '__main__':
             elif (income[0][2]==3):
                 lum = lb | sb
                 print("Lum = %s")
-
-            break
