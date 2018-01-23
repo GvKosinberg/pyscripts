@@ -290,7 +290,7 @@ def read_real(rfm, snc_list):
         data_sum = 0
 
         # XXX
-        log.info("d_adr: %s || d_type: %s" %(d_adr, d_type))
+        log.info("d_adr: %s || d_type: %s" %(d_addr, d_type))
 
         # Проверка на наличие кода типа в списке
         if d_type in __types:
