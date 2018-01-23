@@ -209,7 +209,7 @@ class Sencor:
     def write2mqtt(self):
         mqtt_topic = self.topic
 
-        self.check_timeout()
+        #self.check_timeout()
 
         # TEMP: random data
         if (self.d_type!='SNC_T_AIR' and self.d_type!='SNC_LUMI'):
