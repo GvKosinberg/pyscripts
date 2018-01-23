@@ -35,6 +35,6 @@ if __name__ == '__main__':
                         print("Temp = %s" % temp)
                 elif (income[0][2]==3):
                     lum = lb | sb
-                    print("Lum = %s")
+                    print("Lum = %s" % lum)
     except KeyboardInterrupt:
         print("That's all, folks")
