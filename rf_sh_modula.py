@@ -302,11 +302,11 @@ def read_real(rfm, snc_list):
             log.info("r_type: %s || r_name: %s" %(r_type, r_name))
 
             if (r_type=="TEMP_AIR" and d_addr!=0xcd):
-                data_sum = ((lb | sb)&0xfff)/(16*1.0)
+                data_sum = ((data_lb | data_sb)&0xfff)/(16*1.0)
                 log.warn("hhir is tempa")
                 log.warn("datka = %s" % data_sum)
             elif (r_type=="SNC_LUMI"):
-                data_sum = lb | sb
+                data_sum = data_lb | data_sb
                 log.warn("hhir is lumma")
                 log.warn("datka = %s" % data_sum)
         time.sleep(5)
