@@ -300,7 +300,7 @@ def read_real(rfm, snc_list):
 
             # TODO: убрать адрес левого датчика
             if (r_type == "SNC_T_AIR" and d_addr != 0xcd):
-                data_sum = ((data_lb | data_sb) & 0xfff)/(16*1.0)
+                data_sum = str(((data_lb | data_sb) & 0xfff)/(16*1.0)) + " °C"
             elif (r_type == "SNC_LUMI"):
                 data_sum = str(data_lb | data_sb) + " люкс"
 
