@@ -209,14 +209,13 @@ class Sencor:
     def write2mqtt(self):
         mqtt_topic = self.topic
 
-        #self.check_timeout()
-        log.warn("self.data in method b4 snd: %s" %self.data)
+        # self.check_timeout()
+
         # TEMP: random data
-        if (self.d_type!='SNC_T_AIR' and self.d_type!='SNC_LUMI'):
+        if (self.d_type != 'SNC_T_AIR' and self.d_type != 'SNC_LUMI'):
             self.data = self.get_random_state()
 
         mqtt_val = self.data
-        log.warn("mqtt data: %s" %mqtt_val)
         self.mqtt_c.publish(mqtt_topic, mqtt_val)
 
         log.debug('SNC: %s: VAL: %s ' % (mqtt_topic, mqtt_val))
@@ -292,9 +291,6 @@ def read_real(rfm, snc_list):
         # Итоговые данные
         data_sum = 0
 
-        # XXX
-        log.info("d_adr: %s || d_type: %s" %(d_addr, d_type))
-
         # Проверка на наличие кода типа в списке
         if d_type in __types:
             # Присвоение ключа по коду
@@ -302,25 +298,18 @@ def read_real(rfm, snc_list):
             # Присвоение имени (string)
             r_name = str(d_addr)
 
-            log.info("r_type: %s || r_name: %s" %(r_type, r_name))
-
-            if (r_type=="SNC_T_AIR" and d_addr!=0xcd):
-                data_sum = ((data_lb | data_sb)&0xfff)/(16*1.0)
-                log.warn("hhir is tempa")
-                log.warn("datka = %s" % data_sum)
-            elif (r_type=="SNC_LUMI"):
+            # TODO: убрать адрес левого датчика
+            if (r_type == "SNC_T_AIR" and d_addr != 0xcd):
+                data_sum = ((data_lb | data_sb) & 0xfff)/(16*1.0)
+            elif (r_type == "SNC_LUMI"):
                 data_sum = data_lb | data_sb
-                log.warn("hhir is lumma")
-                log.warn("datka = %s" % data_sum)
         time.sleep(5)
 
     # Проход списка объектов класса Sencor
     for obj in snc_list:
         # Если имя и тип совпали с прочитанными на rfm
         if obj.d_type == r_type and obj.name == "1":
-            log.warn("Data sum: %s" % data_sum)
             obj.data = data_sum
-            log.warn("object data in read_real: %s" % obj.data)
         # Вызов метода публикаци данных в брокере
         obj.write2mqtt()
 
