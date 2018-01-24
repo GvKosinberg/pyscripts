@@ -268,7 +268,7 @@ class Sencor:
 def read_real(rfm, snc_list):
     # коды типов устройств и соответствующие им ключи
     __types = {
-                '0': "TEMP_AIR",
+                '0': "SNC_T_AIR",
                 '3': "SNC_LUMI",
                 '3378': "ENCLAVE"
     }
@@ -304,7 +304,7 @@ def read_real(rfm, snc_list):
 
             log.info("r_type: %s || r_name: %s" %(r_type, r_name))
 
-            if (r_type=="TEMP_AIR" and d_addr!=0xcd):
+            if (r_type=="SNC_T_AIR" and d_addr!=0xcd):
                 data_sum = ((data_lb | data_sb)&0xfff)/(16*1.0)
                 log.warn("hhir is tempa")
                 log.warn("datka = %s" % data_sum)
