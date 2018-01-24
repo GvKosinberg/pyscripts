@@ -302,7 +302,7 @@ def read_real(rfm, snc_list):
             if (r_type == "SNC_T_AIR" and d_addr != 0xcd):
                 data_sum = ((data_lb | data_sb) & 0xfff)/(16*1.0)
             elif (r_type == "SNC_LUMI"):
-                data_sum = data_lb | data_sb
+                data_sum = str(data_lb | data_sb) + " люкс"
 
     # Проход списка объектов класса Sencor
     for obj in snc_list:
