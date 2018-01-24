@@ -315,7 +315,7 @@ def read_real(rfm, snc_list):
         # Если имя и тип совпали с прочитанными на rfm
         if obj.d_type == r_type and obj.name == "1":
             obj.data = data_sum
-            if (flag_inc):
+            if (flag_inc == True):
                 obj.last_responce = time.time()
                 flag_inc = False
         # Вызов метода публикаци данных в брокере
