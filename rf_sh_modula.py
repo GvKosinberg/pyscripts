@@ -318,7 +318,7 @@ def read_real(rfm, snc_list):
                 obj.last_responce = time.time()
                 flag_inc = False
         # Вызов метода публикаци данных в брокере
-            obj.write2mqtt()
+        obj.write2mqtt()
 
 
 """
