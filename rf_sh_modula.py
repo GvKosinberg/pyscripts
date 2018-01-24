@@ -210,7 +210,7 @@ class Sencor:
         mqtt_topic = self.topic
 
         #self.check_timeout()
-        log.warn("self.data in method b4 snd: %s")
+        log.warn("self.data in method b4 snd: %s" %self.data)
         # TEMP: random data
         if (self.d_type!='SNC_T_AIR' and self.d_type!='SNC_LUMI'):
             self.data = self.get_random_state()
