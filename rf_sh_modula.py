@@ -280,6 +280,7 @@ def read_real(rfm, snc_list):
     # Проверка данных (если данные не пришли type(inc_data!=None))
     # если ответ пришел, данные записываются в кортеж
     if type(inc_data) == tuple:
+        log.warn("Packet: %s" % inc_data)
         # адрес устройства
         d_addr = inc_data[0][1]
         # код типа устройства
