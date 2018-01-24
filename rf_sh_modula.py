@@ -195,12 +195,12 @@ class Sencor:
     '''
 
     def check_timeout(self):
-        razn = time.time() - self.last_responce
-        if razn > self.d_timeout:
-            self.data = "-"
-        log.debug("Sencor: %s: time between responces: %s" % (
-            (self.d_type+":"+self.name),
-            razn))
+        __razn = time.time() - self.last_responce
+        if __razn > self.d_timeout:
+            self.data = "timeout"
+            log.debug("Sencor: %s: time between responces: %s" % (
+                (self.d_type+":"+self.name),
+                razn))
 
     '''
         Метод записи полученного значения датчика в брокер
@@ -209,7 +209,7 @@ class Sencor:
     def write2mqtt(self):
         mqtt_topic = self.topic
 
-        # self.check_timeout()
+        self.check_timeout()
 
         # TEMP: random data
         if (self.d_type != 'SNC_T_AIR' and self.d_type != 'SNC_LUMI'):
@@ -333,7 +333,7 @@ if __name__ == "__main__":
     mqtt_client = mqtt_init()
     # try:
     log.info("Init of devices")
-    fake_t_air = Sencor("SNC_T_AIR", "1", rfm, mqtt_client, 60)
+    fake_t_air = Sencor("SNC_T_AIR", "1", rfm, mqtt_client, 120)
     fake_t_wat = Sencor("SNC_T_WATER", "1", rfm, mqtt_client, 60)
     fake_t_heat = Sencor("SNC_T_HEATER", "1", rfm, mqtt_client, 60)
 
