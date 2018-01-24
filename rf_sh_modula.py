@@ -198,9 +198,8 @@ class Sencor:
         __t_diff = time.time() - self.last_responce
         if __t_diff > self.d_timeout:
             self.data = "timeout"
-            log.debug("Sencor: %s: time between responces: %s" % (
-                (self.d_type+":"+self.name),
-                __t_diff))
+        log.debug("Sencor: %s: time between responces: %s" % (
+                (self.d_type+":"+self.name), __t_diff))
 
     '''
         Метод записи полученного значения датчика в брокер
