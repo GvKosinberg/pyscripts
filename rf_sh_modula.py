@@ -309,8 +309,9 @@ def read_real(rfm, snc_list):
         # Если имя и тип совпали с прочитанными на rfm
         if obj.d_type == r_type and obj.name == "1":
             obj.data = data_sum
+            obj.last_responce = time.time()
         # Вызов метода публикаци данных в брокере
-        obj.write2mqtt()
+            obj.write2mqtt()
 
 
 """
