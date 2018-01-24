@@ -290,6 +290,8 @@ def read_real(rfm, snc_list):
         data_lb = inc_data[0][5]
         # Итоговые данные
         data_sum = 0
+        # TEMP: flag
+        flag_inc = False
 
         # Проверка на наличие кода типа в списке
         if d_type in __types:
@@ -297,6 +299,8 @@ def read_real(rfm, snc_list):
             r_type = __types[d_type]
             # Присвоение имени (string)
             r_name = str(d_addr)
+            # TEMP: flagg
+            flag_inc = True
 
             # TODO: убрать адрес левого датчика
             if (r_type == "SNC_T_AIR" and d_addr != 0xcd):
@@ -311,7 +315,9 @@ def read_real(rfm, snc_list):
         # Если имя и тип совпали с прочитанными на rfm
         if obj.d_type == r_type and obj.name == "1":
             obj.data = data_sum
-            obj.last_responce = time.time()
+            if (flag_inc)
+                obj.last_responce = time.time()
+                flag_inc = False
         # Вызов метода публикаци данных в брокере
             obj.write2mqtt()
 
