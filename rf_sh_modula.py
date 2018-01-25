@@ -177,7 +177,7 @@ class Sencor:
             # время последнего ответа (*nix-style)
             self.last_responce = time.time()
             # Полезные данные
-            self.data = "-"
+            self.data = "Инициализация"
         else:
             log.error("Invalid device type: %s" % d_type)
 
@@ -189,7 +189,7 @@ class Sencor:
         '''
         __t_diff = time.time() - self.last_responce
         if __t_diff > self.d_timeout:
-            self.data = "timeout"
+            self.data = "Таймаут"
         log.debug("Sencor: %s: time between responces: %s" % (
                 (self.d_type+":"+self.name), __t_diff))
 
