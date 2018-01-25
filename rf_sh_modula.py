@@ -61,12 +61,6 @@ def mqtt_on_connect(client, userdata, flags, rc):
     log.info("Connected to MQTT with rc: %s" % rc)
 
 
-def mqtt_on_message(client, userdata, msg):
-    '''
-        При поступлении сообщения
-    '''
-
-
 def mqtt_on_disconnect(client, userdata, rc):
     '''
         При отключении от брокера
@@ -86,7 +80,6 @@ def mqtt_on_disconnect(client, userdata, rc):
 def mqtt_init():
     mqtt_client = mqtt.Client()
     mqtt_client.on_connect = mqtt_on_connect
-    # mqtt_client.on_message = mqtt_on_message
     mqtt_client.on_disconnect = mqtt_on_disconnect
 
     mqtt_client.connect("localhost", 1883, 60)
@@ -105,10 +98,10 @@ def mqtt_init():
 
 
 class Device:
-    '''
-        Инициализация объекта
-    '''
     def __init__(self, d_type, name, rfm, mqtt_c):
+        '''
+            Инициализация объекта
+        '''
         __types_devices = {
                         'RELAY': "devices/relays/",
                         'DIM_CRANE': "devices/dimmers/crane/",
@@ -131,10 +124,10 @@ class Device:
         else:
             log.error("Invalid device type: %s" % d_type)
 
-    '''
-        Функция отправки команды на конечное устройство
-    '''
     def write2device(self, clnt, usrdt, msg):
+        '''
+            Метод отправки команды на конечное устройство
+        '''
         log.debug("SENT from: %s NUDES: %s" % (msg.topic, msg.payload))
         if self.d_type == 'RELAY':
             log.debug("AMA RELAY: %s, VAL: %s" % (self.name, msg.payload))
@@ -154,10 +147,10 @@ class Device:
 
 
 class Sencor:
-    '''
-        Инициализация объекта
-    '''
     def __init__(self, d_type, name, rfm, mqtt_c, timeout):
+        '''
+            Инициализация объекта
+        '''
         __types_sncs = {
                         'SNC_T_AIR': "oh/sncs/temp/air/",
                         'SNC_T_WATER': "oh/sncs/temp/water/",
@@ -188,13 +181,12 @@ class Sencor:
         else:
             log.error("Invalid device type: %s" % d_type)
 
-    '''
-        Метод проверки timeout'а ответа
-        если ответа не было дольше, чем timout сек,
-        то устанавливает data = "-" (на странице в openhab'е - "ОШИБКА")
-    '''
-
     def check_timeout(self):
+        '''
+            Метод проверки timeout'а ответа
+            если ответа не было дольше, чем timout сек,
+            то устанавливает data = "timeout"
+        '''
         __t_diff = time.time() - self.last_responce
         if __t_diff > self.d_timeout:
             self.data = "timeout"
@@ -217,8 +209,7 @@ class Sencor:
         mqtt_val = self.data
         self.mqtt_c.publish(mqtt_topic, mqtt_val)
 
-        log.debug('SNC: %s: VAL: %s ' % (mqtt_topic, mqtt_val))
-        # print('Last responce: %s' %str(self.last_responce))
+        log.debug('SNC_TOP: %s: VAL: %s ' % (mqtt_topic, mqtt_val))
 
     # TEMP: random generator for tests
     def get_random_state(self):
@@ -313,8 +304,9 @@ def read_real(rfm, snc_list):
     for obj in snc_list:
         # Если имя и тип совпали с прочитанными на rfm
         if obj.d_type == r_type and obj.name == "1":
-            obj.data = data_sum
-            if (flag_inc == True):
+            # Если установлен флаг принятого пакета
+            if flag_inc:
+                obj.data = data_sum
                 obj.last_responce = time.time()
                 flag_inc = False
         # Вызов метода публикаци данных в брокере
