@@ -193,11 +193,10 @@ class Sencor:
         log.debug("Sencor: %s: time between responces: %s" % (
                 (self.d_type+":"+self.name), __t_diff))
 
-    '''
-        Метод записи полученного значения датчика в брокер
-    '''
-
     def write2mqtt(self):
+        '''
+            Метод записи полученного значения датчика в брокер
+        '''
         mqtt_topic = self.topic
 
         self.check_timeout()
