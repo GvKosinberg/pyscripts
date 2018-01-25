@@ -129,8 +129,10 @@ class Device:
             Метод отправки команды на конечное устройство
         '''
         log.debug("SENT from: %s NUDES: %s" % (msg.topic, msg.payload))
+        # Для устройств типа "реле"
         if self.d_type == 'RELAY':
             log.debug("AMA RELAY: %s, VAL: %s" % (self.name, msg.payload))
+        # Для диммеров
         else:
             log.debug("AMA: %s:%s, VAL: %s" % (
                 self.d_type, self.name, msg.payload))
@@ -294,7 +296,7 @@ def read_real(rfm, snc_list):
             # TODO: убрать адрес левого датчика
             # Преобразования данных для различных типов датчиков
             if (r_type == "SNC_T_AIR" and d_addr != 0xcd):
-                data_sum = str(((data_lb | data_sb) & 0xfff)/(16*1.0)) + " °C"
+                data_sum = str(data_lb | data_sb) + " °C"
             elif (r_type == "SNC_LUMI"):
                 data_sum = str(data_lb | data_sb) + " люкс"
 
