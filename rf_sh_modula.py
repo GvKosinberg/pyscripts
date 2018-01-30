@@ -192,19 +192,23 @@ class Sencor:
         __t_diff = time.time() - self.last_responce
         if __t_diff > self.d_timeout:
             self.data = "Таймаут"
-        log.debug("Sencor: %s: time between responces: %s" % (
-                (self.d_type+":"+self.name), __t_diff))
+            log.debug("Sencor: %s: time between responces: %s" % (
+                    (self.d_type+":"+self.name), __t_diff))
 
     def write2mqtt(self):
         '''
             Метод записи полученного значения датчика в брокер
         '''
+        __realz = [
+            'SNC_T_AIR',
+            'SNC_LUMI'
+        ]
         mqtt_topic = self.topic
 
         self.check_timeout()
 
         # TEMP: random data
-        if (self.d_type != 'SNC_T_AIR' and self.d_type != 'SNC_LUMI'):
+        if (self.d_type not in __realz):
             self.data = self.get_random_state()
 
         mqtt_val = self.data
