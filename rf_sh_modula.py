@@ -199,15 +199,15 @@ class Sencor:
         '''
             Метод записи полученного значения датчика в брокер
         '''
-        __realz = [
-            'SNC_T_AIR',
-            'SNC_LUMI'
-        ]
         mqtt_topic = self.topic
 
         self.check_timeout()
 
         # TEMP: random data
+        __realz = [
+            'SNC_T_AIR',
+            'SNC_LUMI',
+        ]
         if (self.d_type not in __realz):
             self.data = self.get_random_state()
 
