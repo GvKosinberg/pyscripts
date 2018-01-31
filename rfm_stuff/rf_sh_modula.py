@@ -201,10 +201,11 @@ class Sencor:
         '''
         __t_diff = time.time() - self.last_responce
         if __t_diff > self.d_timeout:
-            self.data = ('Время ответа истекло. \n Последнее значение: %s \n Время последнего ответа: %s' % (
+            self.data = ('Время ответа истекло. /n Последнее значение: %s /n Время последнего ответа: %s' % (
                         self.last_data, self.last_responce))
             log.debug("Sencor: %s: time between responces: %s" % (
                     (self.d_type+":"+self.name), __t_diff))
+            log.
 
     def write2mqtt(self):
         '''
@@ -294,7 +295,7 @@ def read_real(rfm, snc_list):
     flag_inc = False
 
     # Ожидание сообщения
-    inc_data = rfm.wait_for_packet(60)
+    inc_data = rfm.wait_for_packet(59)
 
     # Проверка данных (если данные не пришли type(inc_data!=None))
     # если ответ пришел, данные записываются в кортеж
