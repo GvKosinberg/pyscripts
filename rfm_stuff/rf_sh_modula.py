@@ -221,6 +221,7 @@ class Sencor:
         ]
         if (self.d_type not in __realz):
             self.data = self.get_random_state()
+            log.debug("Random SNC:%s VAL: %s" %(self.d_type, self.data))
 
         # Для отображения в OH2
         self.mqtt_c.publish(self.topic_val, self.data)
