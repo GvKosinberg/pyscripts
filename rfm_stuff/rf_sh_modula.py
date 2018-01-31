@@ -205,7 +205,6 @@ class Sencor:
                         self.last_data, self.last_responce))
             log.debug("Sencor: %s: time between responces: %s" % (
                     (self.d_type+":"+self.name), __t_diff))
-            log.
 
     def write2mqtt(self):
         '''
