@@ -342,7 +342,7 @@ def read_real(rfm, snc_list):
                 obj.data = data_sum
                 obj.last_data = data_sum
                 obj.rssi = d_rssi
-                obj.bat = d_bat
+                obj.bat_lvl = d_bat
                 obj.pack_id = d_packid
                 obj.last_responce = time.time()
                 flag_inc = False
