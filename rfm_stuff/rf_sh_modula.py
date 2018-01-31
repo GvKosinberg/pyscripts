@@ -367,12 +367,12 @@ if __name__ == "__main__":
     mqtt_client = mqtt_init()
     # try:
     log.info("Init of devices")
-    fake_t_air = Sencor("SNC_T_AIR", "1", rfm, mqtt_client, 120)
+    fake_t_air = Sencor("SNC_T_AIR", "1", rfm, mqtt_client, 1080)
     fake_t_wat = Sencor("SNC_T_WATER", "1", rfm, mqtt_client, 60)
     fake_t_heat = Sencor("SNC_T_HEATER", "1", rfm, mqtt_client, 60)
 
     fake_humi = Sencor("SNC_HUMI", "1", rfm, mqtt_client, 60)
-    fake_lumi = Sencor("SNC_LUMI", "9", rfm, mqtt_client, 60)
+    fake_lumi = Sencor("SNC_LUMI", "9", rfm, mqtt_client, 1080)
 
     fake_door = Sencor("SNC_DOOR", "1", rfm, mqtt_client, 60)
 
