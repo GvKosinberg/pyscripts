@@ -373,7 +373,7 @@ if __name__ == "__main__":
     fake_t_heat = Sencor("SNC_T_HEATER", "1", rfm, mqtt_client, 60)
 
     fake_humi = Sencor("SNC_HUMI", "1", rfm, mqtt_client, 60)
-    fake_lumi = Sencor("SNC_LUMI", "1", rfm, mqtt_client, 60)
+    fake_lumi = Sencor("SNC_LUMI", "9", rfm, mqtt_client, 60)
 
     fake_door = Sencor("SNC_DOOR", "1", rfm, mqtt_client, 60)
 
