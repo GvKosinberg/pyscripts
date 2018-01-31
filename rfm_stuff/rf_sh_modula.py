@@ -318,7 +318,8 @@ def read_real(rfm, snc_list):
         except:
             log.error("Bad pack received: %s" % inc_data)
         # Проверка на наличие кода типа в списке
-        if d_type in __types:
+        # TODO: убрать адрес левого датчика
+        if (d_type in __types) and (d_addr != 0xcd):
             # Присвоение ключа по коду
             r_type = __types[d_type]
             # Присвоение имени (string)
@@ -326,9 +327,8 @@ def read_real(rfm, snc_list):
             # TEMP: flagg
             flag_inc = True
 
-            # TODO: убрать адрес левого датчика
             # Преобразования данных для различных типов датчиков
-            if (r_type == "SNC_T_AIR" and d_addr != 0xcd):
+            if (r_type == "SNC_T_AIR"):
                 data_sum = str((data_lb | data_sb)/10.00) + " °C"
             elif (r_type == "SNC_LUMI"):
                 data_sum = str(data_lb | data_sb) + " люкс"
