@@ -201,8 +201,9 @@ class Sencor:
         '''
         __t_diff = time.time() - self.last_responce
         if __t_diff > self.d_timeout:
-            self.data = ('Время ответа истекло. /n Последнее значение: %s /n Время последнего ответа: %s' % (
-                        self.last_data, self.last_responce))
+            self.data = 'Время ответа истекло. \n' +
+                        'Последнее значение:' + self.data + '\n'
+                        'Последний отклик:' + self.last_responce
             log.debug("Sencor: %s: time between responces: %s" % (
                     (self.d_type+":"+self.name), __t_diff))
 
