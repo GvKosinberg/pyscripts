@@ -172,14 +172,24 @@ class Sencor:
             self.mqtt_c = mqtt_c
             self.d_type = d_type
             self.name = name
-            # топик в mqtt-брокере
-            self.topic = __types_sncs[d_type]+name
+            # топики в mqtt-брокере
+            self.topic_com = __types_sncs[d_type]+name
+            self.topic_val = self.topic_com + "/val"
+            self.topic_rssi = self.topic_com + "/rssi"
+            self.topic_lstrsp = self.topic_com + "/lr"
+            self.topic_bat = self.topic_com + "/bat"
+            self.topic_packid = self.topic_com + "/packid"
+
             # таймаут ответа
             self.d_timeout = timeout
             # время последнего ответа (*nix-style)
             self.last_responce = time.time()
+            self.last_data = "-"
             # Полезные данные
             self.data = "Инициализация"
+            self.rssi = 0
+            self.bat_lvl = 0
+            self.pack_id = 0
         else:
             log.error("Invalid device type: %s" % d_type)
 
@@ -191,7 +201,9 @@ class Sencor:
         '''
         __t_diff = time.time() - self.last_responce
         if __t_diff > self.d_timeout:
-            self.data = "Таймаут"
+            self.data = ('Время ответа истекло. \n Последнее значение: %s \n
+                        Время последнего ответа: %s' % (
+                        self.last_data, self.last_responce))
             log.debug("Sencor: %s: time between responces: %s" % (
                     (self.d_type+":"+self.name), __t_diff))
 
@@ -199,7 +211,6 @@ class Sencor:
         '''
             Метод записи полученного значения датчика в брокер
         '''
-        mqtt_topic = self.topic
 
         self.check_timeout()
 
@@ -211,10 +222,16 @@ class Sencor:
         if (self.d_type not in __realz):
             self.data = self.get_random_state()
 
-        mqtt_val = self.data
-        self.mqtt_c.publish(mqtt_topic, mqtt_val)
+        # Для отображения в OH2
+        self.mqtt_c.publish(self.topic_val, self.data)
 
-        log.debug('SNC_TOP: %s: VAL: %s ' % (mqtt_topic, mqtt_val))
+        # Для разработки
+        self.mqtt_c.publish(self.topic_rssi, self.rssi)
+        self.mqtt_c.publish(self.topic_bat, self.bat_lvl)
+        self.mqtt_c.publish(self.topic_lstrsp, self.last_responce)
+        self.mqtt_c.publish(self.topic_packid, self.pack_id)
+
+
 
     # TEMP: random generator for tests
     def get_random_state(self):
@@ -268,6 +285,14 @@ def read_real(rfm, snc_list):
     }
     r_type = "-"
     r_name = "-"
+    d_rssi = 0
+    d_bat = 0
+    d_packid = 0
+    # Итоговые данные
+    data_sum = 0
+
+    # TEMP: flag
+    flag_inc = False
 
     # Ожидание сообщения
     inc_data = rfm.wait_for_packet(60)
@@ -275,19 +300,24 @@ def read_real(rfm, snc_list):
     # Проверка данных (если данные не пришли type(inc_data!=None))
     # если ответ пришел, данные записываются в кортеж
     if type(inc_data) == tuple:
-        # адрес устройства
-        d_addr = inc_data[0][1]
-        # код типа устройства
-        d_type = str(inc_data[0][2])
-        # Старший байт данных
-        data_sb = inc_data[0][6] << 8
-        # Младший байт данных
-        data_lb = inc_data[0][5]
-        # Итоговые данные
-        data_sum = 0
-        # TEMP: flag
-        flag_inc = False
+        try:
+            # адрес устройства
+            d_addr = inc_data[0][1]
+            # код типа устройства
+            d_type = str(inc_data[0][2])
+            # Уровень сигнала
+            d_rssi = inc_data[1]
+            # Номер пакета
+            d_packid = inc_data[0][3]
+            # Уровень батареи
+            d_bat = inc_data[0][4]
 
+            # Младший байт данных
+            data_lb = inc_data[0][5]
+            # Старший байт данных
+            data_sb = inc_data[0][6] << 8
+        except:
+            log.error("Bad pack received: %s" % inc_data)
         # Проверка на наличие кода типа в списке
         if d_type in __types:
             # Присвоение ключа по коду
@@ -307,10 +337,11 @@ def read_real(rfm, snc_list):
     # Проход списка объектов класса Sencor
     for obj in snc_list:
         # Если имя и тип совпали с прочитанными на rfm
-        if obj.d_type == r_type and obj.name == "1":
+        if obj.d_type == r_type and obj.name == r_name:
             # Если установлен флаг принятого пакета
             if flag_inc:
                 obj.data = data_sum
+                obj.last_data = data_sum
                 obj.last_responce = time.time()
                 flag_inc = False
         # Вызов метода публикаци данных в брокере
