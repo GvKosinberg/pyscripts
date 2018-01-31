@@ -341,6 +341,9 @@ def read_real(rfm, snc_list):
             if flag_inc:
                 obj.data = data_sum
                 obj.last_data = data_sum
+                obj.rssi = d_rssi
+                obj.bat = d_bat
+                obj.pack_id = d_packid
                 obj.last_responce = time.time()
                 flag_inc = False
         # Вызов метода публикаци данных в брокере
