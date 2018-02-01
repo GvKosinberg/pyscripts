@@ -331,14 +331,15 @@ def read_real(rfm, snc_list):
             # TEMP: flagg
             flag_inc = True
 
-            # Преобразования данных для различных типов датчиков
-            if (r_type == "SNC_T_AIR"):
-                if (data_lb | data_sb) == 0x7FF:
-                    data_sum = "Ошибка датчика"
-                else:
-                    data_sum = str((data_lb | data_sb)/10.00) + " °C"
-            elif (r_type == "SNC_LUMI"):
-                data_sum = str(data_lb | data_sb) + " люкс"
+            if (data_lb | data_sb) in __errors[r_type]:
+                data_sum = "Ошибка датчика"
+            else:
+                # Преобразования данных для различных типов датчиков
+                if (r_type == "SNC_T_AIR"):
+                    d_s = (data_lb | data_sb) & 0xFFF
+                    data_sum = str(d_s/10.00) + " °C"
+                elif (r_type == "SNC_LUMI"):
+                    data_sum = str(data_lb | data_sb) + " люкс"
 
     # Проход списка объектов класса Sencor
     for obj in snc_list:
