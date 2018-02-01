@@ -3,21 +3,31 @@
 # Author: Antipin S.O. @RLDA
 
 import unittest
-from ./rfm_stuff import rf_sh_modula
+import tested_fns as tf
 
 class rf_sh_Test(unittest.TestCase):
-    def test_add(self):
+    def test_normal_t(self):
+        inc = ([0, 1, 0, 74, 163, 50, 13], "sumfux")
+        msg = "337.8 °C"
+        self.assertEqual(tf.read_real(inc), msg)
 
-        self.assertEqual(calc.add(1, 2), 3)
+    def test_normal_l(self):
+        inc = ([0, 9, 3, 74, 163, 50, 13], "sumfux")
+        msg = "3378 люкс"
+        self.assertEqual(tf.read_real(inc), msg)
 
-    def test_sub(self):
-        self.assertEqual(calc.sub(4, 2), 2)
+    def test_err_t(self):
+        inc = ([0, 1, 0, 74, 163, 0xFF, 0x7], "sumfux")
+        msg = "Ошибка датчика"
+        self.assertEqual(tf.read_real(inc), msg)
 
-    def test_mul(self):
-        self.assertEqual(calc.mul(2, 5), 10)
+    def test_err_l(self):
+        inc = ([0, 9, 3, 74, 163, 0xFF, 0xFF], "sumfux")
+        msg = "Ошибка датчика"
+        self.assertEqual(tf.read_real(inc), msg)
 
-    def test_div(self):
-        self.assertEqual(calc.div(8, 4), 2)
-
+'''
+    jjj
+'''
 if __name__ == '__main__':
     unittest.main()
