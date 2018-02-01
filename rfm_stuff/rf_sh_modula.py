@@ -282,6 +282,10 @@ def read_real(rfm, snc_list):
                 '3': "SNC_LUMI",
                 '3378': "ENCLAVE"
     }
+    __errors = {
+                'SNC_T_AIR': [0x7FF, 0x00,],
+                'SNC_LUMI': [0xFFFF, 0x00,],
+    }
     r_type = "-"
     r_name = "-"
     d_rssi = 0
@@ -329,7 +333,10 @@ def read_real(rfm, snc_list):
 
             # Преобразования данных для различных типов датчиков
             if (r_type == "SNC_T_AIR"):
-                data_sum = str((data_lb | data_sb)/10.00) + " °C"
+                if (data_lb | data_sb) == 0x7FF:
+                    data_sum = "Ошибка датчика"
+                else:
+                    data_sum = str((data_lb | data_sb)/10.00) + " °C"
             elif (r_type == "SNC_LUMI"):
                 data_sum = str(data_lb | data_sb) + " люкс"
 
