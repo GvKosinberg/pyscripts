@@ -265,6 +265,31 @@ class Sencor:
         self.last_responce = time.time()
         return out
 
+"""
+    Тестовая штука для отсылки сырых данных в топики debug/
+"""
+def send_raw_data(income, mqc):
+    __types = {
+                '0': "SNC_T_AIR",
+                '3': "SNC_LUMI",
+                '6': 'CNTR',
+                '7': "SNC_DOOR",
+                '14': "DEV_RELAY",
+                '3378': "ENCLAVE"
+    }
+    addr_r = str(inc_data[0][1])
+    type_r = str(income[0][2])
+
+    topic_base = "debug/" + __types[type_r] + addr_r
+
+    topic_arr =  topic_base + "/arr"
+    data = income[0]
+    mqc.publish(topic_arr, data)
+
+    topic_rssi = topic_base + "/rssi"
+    data = income[1]
+    mqc.publish(topic_rssi, data)
+
 
 """
     Функция чтения занчений с rfm
@@ -273,7 +298,7 @@ class Sencor:
 """
 
 
-def read_real(rfm, snc_list):
+def read_real(rfm, snc_list, mqc):
     # коды типов устройств и соответствующие им ключи
     __types = {
                 '0': "SNC_T_AIR",
@@ -301,6 +326,7 @@ def read_real(rfm, snc_list):
     # Проверка данных (если данные не пришли type(inc_data!=None))
     # если ответ пришел, данные записываются в кортеж
     if type(inc_data) == tuple:
+        send_raw_data(inc_data, mqc)
         try:
             # адрес устройства
             d_addr = inc_data[0][1]
@@ -409,7 +435,7 @@ if __name__ == "__main__":
     try:
         log.info("Enter the cycle")
         while(True):
-            read_real(rfm, snc_list)
+            read_real(rfm, snc_list, mqtt_client)
             log.debug("//===========//")
     except KeyboardInterrupt:
         log.info("That's all, folks")
