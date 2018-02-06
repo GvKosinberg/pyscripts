@@ -219,7 +219,7 @@ class Sencor:
         ]
         if (self.d_type not in __realz):
             self.data = self.get_random_state()
-            log.debug("Random SNC:%s VAL: %s" %(self.d_type, self.data))
+            log.debug("Random SNC:%s VAL: %s" % (self.d_type, self.data))
 
         # Для отображения в OH2
         self.mqtt_c.publish(self.topic_val, self.data)
@@ -229,8 +229,6 @@ class Sencor:
         self.mqtt_c.publish(self.topic_bat, self.bat_lvl)
         self.mqtt_c.publish(self.topic_lstrsp, self.last_responce)
         self.mqtt_c.publish(self.topic_packid, self.pack_id)
-
-
 
     # TEMP: random generator for tests
     def get_random_state(self):
@@ -283,8 +281,8 @@ def read_real(rfm, snc_list):
                 '3378': "ENCLAVE"
     }
     __errors = {
-                'SNC_T_AIR': [0x7FF, 0x00,],
-                'SNC_LUMI': [0xFFFF, 0x00,],
+                'SNC_T_AIR': [0x7FF, 0x00, ],
+                'SNC_LUMI': [0xFFFF, 0x00, ],
     }
     r_type = "-"
     r_name = "-"
@@ -319,8 +317,9 @@ def read_real(rfm, snc_list):
             data_lb = inc_data[0][5]
             # Старший байт данных
             data_sb = inc_data[0][6] << 8
-        except:
+        except Exception as e:
             log.error("Bad pack received: %s" % inc_data)
+            log.error("Exception: %s", e)
         # Проверка на наличие кода типа в списке
         # TODO: убрать адрес левого датчика
         if (d_type in __types) and (d_addr != 0xcd):
