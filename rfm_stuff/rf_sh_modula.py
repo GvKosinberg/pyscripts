@@ -444,7 +444,7 @@ if __name__ == "__main__":
         log.info("Enter the cycle")
         while(True):
             now = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
-            log.debug("Current time %s" % now)
+            log.info("Current time %s" % now)
             read_real(rfm, snc_list, mqtt_client)
             log.debug("//===========//")
     except KeyboardInterrupt:
