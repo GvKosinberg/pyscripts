@@ -302,6 +302,7 @@ def send_raw_data(income, mqc):
     except Exception as e:
         log.warn("Bad packet received: %s", e)
 
+
 def read_real(rfm, snc_list, mqc):
     """
         Функция чтения занчений с rfm
