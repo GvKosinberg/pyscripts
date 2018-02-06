@@ -286,7 +286,7 @@ def send_raw_data(income, mqc):
     array = income[0]
     data = ""
     for i in array:
-        data += "0x" + str(hex(i)) + " "
+        data += str(hex(i)) + " "
     mqc.publish(topic_arr, data)
     log.debug("RAW Topic %s, %s" % (topic_arr, data))
 
