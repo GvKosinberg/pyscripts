@@ -277,7 +277,7 @@ def send_raw_data(income, mqc):
                 '14': "DEV_RELAY",
                 '3378': "ENCLAVE"
     }
-    addr_r = str(inc_data[0][1])
+    addr_r = str(income[0][1])
     type_r = str(income[0][2])
 
     topic_base = "debug/" + __types[type_r] + addr_r
