@@ -265,10 +265,12 @@ class Sencor:
         self.last_responce = time.time()
         return out
 
-"""
-    Тестовая штука для отсылки сырых данных в топики debug/
-"""
+
 def send_raw_data(income, mqc):
+    """
+        Тестовая штука для отсылки сырых данных в топики debug/
+    """
+
     __types = {
                 '0': "SNC_T_AIR",
                 '3': "SNC_LUMI",
@@ -282,7 +284,7 @@ def send_raw_data(income, mqc):
 
     topic_base = "debug/" + __types[type_r] + "/" + addr_r
 
-    topic_arr =  topic_base + "/arr"
+    topic_arr = topic_base + "/arr"
     array = income[0]
     data = ""
     for i in array:
@@ -298,15 +300,13 @@ def send_raw_data(income, mqc):
     log.debug("RAW DATA SENT")
 
 
-
-"""
-    Функция чтения занчений с rfm
-    если ничего не поступило, функция записи в mqtt все равно будет вызвана,
-    т.к. там есть метод проверки таймаута ответа
-"""
-
-
 def read_real(rfm, snc_list, mqc):
+    """
+        Функция чтения занчений с rfm
+        если ничего не поступило, функция записи в mqtt все равно
+        будет вызвана, т.к. там есть метод проверки таймаута ответа
+    """
+
     # коды типов устройств и соответствующие им ключи
     __types = {
                 '0': "SNC_T_AIR",
