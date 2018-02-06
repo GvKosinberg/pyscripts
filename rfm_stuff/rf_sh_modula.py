@@ -285,10 +285,15 @@ def send_raw_data(income, mqc):
     topic_arr =  topic_base + "/arr"
     data = income[0]
     mqc.publish(topic_arr, data)
+    log.debug("RAW Topic %s, %s" % (topic_arr, data))
 
     topic_rssi = topic_base + "/rssi"
     data = income[1]
     mqc.publish(topic_rssi, data)
+    log.debug("RAW Topic %s, %s" % (topic_rssi, data))
+
+    log.debug("RAW DATA SENT")
+
 
 
 """
