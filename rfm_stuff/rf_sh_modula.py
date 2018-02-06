@@ -443,7 +443,7 @@ if __name__ == "__main__":
     try:
         log.info("Enter the cycle")
         while(True):
-            now = time.clock()
+            now = strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime())
             log.debug("Current time %s" % now)
             read_real(rfm, snc_list, mqtt_client)
             log.debug("//===========//")
