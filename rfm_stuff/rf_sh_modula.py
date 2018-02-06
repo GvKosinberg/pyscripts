@@ -279,26 +279,28 @@ def send_raw_data(income, mqc):
                 '14': "DEV_RELAY",
                 '3378': "ENCLAVE"
     }
-    addr_r = str(income[0][1])
-    type_r = str(income[0][2])
+    try:
+        addr_r = str(income[0][1])
+        type_r = str(income[0][2])
 
-    topic_base = "debug/" + __types[type_r] + "/" + addr_r
+        topic_base = "debug/" + __types[type_r] + "/" + addr_r
 
-    topic_arr = topic_base + "/arr"
-    array = income[0]
-    data = ""
-    for i in array:
-        data += str(hex(i)) + " "
-    mqc.publish(topic_arr, data)
-    log.debug("RAW Topic %s, %s" % (topic_arr, data))
+        topic_arr = topic_base + "/arr"
+        array = income[0]
+        data = ""
+        for i in array:
+            data += str(hex(i)) + " "
+        mqc.publish(topic_arr, data)
+        log.debug("RAW Topic %s, %s" % (topic_arr, data))
 
-    topic_rssi = topic_base + "/rssi"
-    data = str(income[1])
-    mqc.publish(topic_rssi, data)
-    log.debug("RAW Topic %s, %s" % (topic_rssi, data))
+        topic_rssi = topic_base + "/rssi"
+        data = str(income[1])
+        mqc.publish(topic_rssi, data)
+        log.debug("RAW Topic %s, %s" % (topic_rssi, data))
 
-    log.debug("RAW DATA SENT")
-
+        log.debug("RAW DATA SENT")
+    except Exception as e:
+        log.warn("Bad packet received: %s", e)
 
 def read_real(rfm, snc_list, mqc):
     """
