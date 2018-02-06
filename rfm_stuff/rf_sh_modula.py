@@ -443,6 +443,8 @@ if __name__ == "__main__":
     try:
         log.info("Enter the cycle")
         while(True):
+            now = time.time()
+            log.debug("Current time %s" % now)
             read_real(rfm, snc_list, mqtt_client)
             log.debug("//===========//")
     except KeyboardInterrupt:
