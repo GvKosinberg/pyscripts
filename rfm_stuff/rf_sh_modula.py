@@ -17,15 +17,14 @@ import time
 # DEBUG: dev_stuff
 import random
 import logging
-import logging.config
 
 
 """
     Подключение консольного логера
 """
 
-logging.config.fileConfig('~/pyscripts/rfm_stuff/logging.conf')
 
+logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
