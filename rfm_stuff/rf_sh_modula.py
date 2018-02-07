@@ -25,7 +25,7 @@ import logging
 
 
 logging.basicConfig(level=logging.DEBUG)
-log = logging.getLogger("rf_sh_modula")
+log = logging.getLogger(__name__)
 
 
 """
