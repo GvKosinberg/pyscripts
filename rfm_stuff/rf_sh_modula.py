@@ -24,7 +24,7 @@ import logging.config
     Подключение консольного логера
 """
 
-logging.config.fileConfig('logging.conf')
+logging.config.fileConfig('~/pyscripts/rfm_stuff/logging.conf')
 
 log = logging.getLogger(__name__)
 
