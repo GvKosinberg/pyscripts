@@ -17,7 +17,7 @@ import time
 # DEBUG: dev_stuff
 import random
 import logging
-
+from logging.handlers import RotatingFileHandler
 
 """
     Подключение логера
