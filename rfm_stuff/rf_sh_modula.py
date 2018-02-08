@@ -28,7 +28,11 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 # add a rotating handler
-rfh = RotatingFileHandler(path, maxBytes=200, backupCount=5)
+rfh = TimedRotatingFileHandler(
+                                path,
+                                when="m",
+                                interval=1,
+                                backupCount=5)
 rfh.setLevel(logging.DEBUG)
 
 ch = logging.StreamHandler()
