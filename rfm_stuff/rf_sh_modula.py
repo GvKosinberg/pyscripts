@@ -38,23 +38,20 @@ rfh.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter(
+                        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 rfh.setFormatter(formatter)
 
 log.addHandler(ch)
 log.addHandler(rfh)
 
-"""
-    Инициализация RFM69
-    На выходе объект класса rfm69
-"""
-
 
 def init_rfm():
-    # TEMP: faek rfm unit
-    # rfm_unit = "sum_sh1et"
-    #
+    """
+        Инициализация RFM69
+        На выходе объект класса rfm69
+    """
     myconf = rfm69.RFM69Configuration()
     rfm_unit = rfm69.RFM69(
                             dio0_pin=24,
@@ -64,11 +61,6 @@ def init_rfm():
     # setting RSSI treshold
     rfm_unit.set_rssi_threshold(-114)
     return rfm_unit
-
-
-"""
-    Инициализация клента mqtt-брокера
-"""
 
 
 def mqtt_on_connect(client, userdata, flags, rc):
@@ -88,13 +80,11 @@ def mqtt_on_disconnect(client, userdata, rc):
         log.info("Expected disconnection")
 
 
-"""
-    Функция инициализации клиента mqtt
-    на выходе - объект класса mqtt.client
-"""
-
-
 def mqtt_init():
+    """
+        Функция инициализации клиента mqtt
+        на выходе - объект класса mqtt.client
+    """
     mqtt_client = mqtt.Client()
     mqtt_client.on_connect = mqtt_on_connect
     mqtt_client.on_disconnect = mqtt_on_disconnect
@@ -105,16 +95,15 @@ def mqtt_init():
     return mqtt_client
 
 
-"""
-    Класс исполнительных устройств
-    d_type - тип устройства в формате __types_devices (string)
-    name - собственное имя устройства (или номер) (string)
-    rfm - экземпляр RFM69
-    mqtt_c - экземпляр paho.mqtt.Client
-"""
-
-
 class Device:
+    """
+        Класс исполнительных устройств
+        d_type - тип устройства в формате __types_devices (string)
+        name - собственное имя устройства (или номер) (string)
+        rfm - экземпляр RFM69
+        mqtt_c - экземпляр paho.mqtt.Client
+    """
+
     def __init__(self, d_type, name, rfm, mqtt_c):
         '''
             Инициализация объекта
@@ -155,17 +144,16 @@ class Device:
                 self.d_type, self.name, msg.payload))
 
 
-"""
-    Класс исполнительных устройств
-    d_type - тип устройства в формате __types_devices (string)
-    name - собственное имя устройства (или номер) (string)
-    rfm - экземпляр RFM69
-    mqtt_c - экземпляр paho.mqtt.Client
-    timeout - время таймаута
-"""
-
-
 class Sencor:
+    """
+        Класс исполнительных устройств
+        d_type - тип устройства в формате __types_devices (string)
+        name - собственное имя устройства (или номер) (string)
+        rfm - экземпляр RFM69
+        mqtt_c - экземпляр paho.mqtt.Client
+        timeout - время таймаута
+    """
+
     def __init__(self, d_type, name, rfm, mqtt_c, timeout):
         '''
             Инициализация объекта
@@ -354,6 +342,7 @@ def read_real(rfm, snc_list, mqc):
     # Проверка данных (если данные не пришли type(inc_data!=None))
     # если ответ пришел, данные записываются в кортеж
     if type(inc_data) == tuple:
+        # TEMP: Тестовая хренотень
         send_raw_data(inc_data, mqc)
         try:
             # адрес устройства
@@ -411,13 +400,12 @@ def read_real(rfm, snc_list, mqc):
         obj.write2mqtt()
 
 
-"""
-    Функция составления списка всех объектов класса Sencor
-    на выходе - list[Sencor]
-"""
-
-
 def get_snc_list():
+    """
+        Функция составления списка всех объектов класса Sencor
+        на выходе - list[Sencor]
+    """
+
     snc_list = []
     for obj in gc.get_objects():
         if isinstance(obj, Sencor):
@@ -454,12 +442,8 @@ if __name__ == "__main__":
     fake_curt = Device("DIM_CURT", "1", rfm, mqtt_client)
     fake_step = Device("DIM_STEP", "1", rfm, mqtt_client)
     fake_trmrl = Device("DIM_TRMRL", "1", rfm, mqtt_client)
-
-    # except Exception as e:
-    #     log.error("Init fux")
-    #     raise(e)
-
     snc_list = get_snc_list()
+
     try:
         log.info("Enter the cycle")
         while(True):
