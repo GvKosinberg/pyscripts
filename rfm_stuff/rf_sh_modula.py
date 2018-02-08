@@ -36,9 +36,8 @@ ch.setLevel(logging.DEBUG)
 log.addHandler(ch)
 
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
 ch.setFormatter(formatter)
-fh.setFormatter(formatter)
+rfh.setFormatter(formatter)
 
 
 """
