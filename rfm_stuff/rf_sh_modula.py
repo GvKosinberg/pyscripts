@@ -23,9 +23,14 @@ import logging
     Подключение консольного логера
 """
 
+def init_log():
 
-logging.basicConfig(level=logging.DEBUG)
-log = logging.getLogger(__name__)
+    path = "~/pylog/pylog.log"
+    log = logging.getLogger(__name__)
+    log.setLevel(logging.INFO)
+    # add a rotating handler
+    handler = RotatingFileHandler(path, maxBytes=20, backupCount=5)
+    log.addHandler(handler)
 
 
 """
