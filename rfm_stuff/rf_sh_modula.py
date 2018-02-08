@@ -20,17 +20,15 @@ import logging
 
 
 """
-    Подключение консольного логера
+    Подключение логера
 """
 
-def init_log():
-
-    path = "~/pylog/pylog.log"
-    log = logging.getLogger(__name__)
-    log.setLevel(logging.INFO)
-    # add a rotating handler
-    handler = RotatingFileHandler(path, maxBytes=20, backupCount=5)
-    log.addHandler(handler)
+path = "~/pylog/pylog.log"
+log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
+# add a rotating handler
+handler = RotatingFileHandler(path, maxBytes=20, backupCount=5)
+log.addHandler(handler)
 
 
 """
