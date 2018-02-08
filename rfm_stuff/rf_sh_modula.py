@@ -24,12 +24,17 @@ from logging.handlers import RotatingFileHandler
 """
 
 path = "pylog/pylog.log"
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-# add a rotating handler
-handler = RotatingFileHandler(path, maxBytes=20, backupCount=5)
-log.addHandler(handler)
 
+# add a rotating handler
+rfh = RotatingFileHandler(path, maxBytes=20, backupCount=5)
+rfh = setLevel(logging.DEBUG)
+log.addHandler(rfh)
+
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+log.addHandler(ch)
 
 """
     Инициализация RFM69
