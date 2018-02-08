@@ -30,7 +30,7 @@ log.setLevel(logging.DEBUG)
 # add a rotating handler
 rfh = TimedRotatingFileHandler(
                                 path,
-                                when="m",
+                                when="D",
                                 interval=1,
                                 backupCount=5)
 rfh.setLevel(logging.DEBUG)
