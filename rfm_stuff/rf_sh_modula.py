@@ -29,16 +29,16 @@ log = logging.getLogger(__name__)
 # add a rotating handler
 rfh = RotatingFileHandler(path, maxBytes=200, backupCount=5)
 rfh.setLevel(logging.DEBUG)
-log.addHandler(rfh)
 
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
-log.addHandler(ch)
 
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 rfh.setFormatter(formatter)
 
+log.addHandler(ch)
+log.addHandler(rfh)
 
 """
     Инициализация RFM69
