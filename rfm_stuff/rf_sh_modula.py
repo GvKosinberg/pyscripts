@@ -23,7 +23,7 @@ from logging.handlers import RotatingFileHandler
     Подключение логера
 """
 
-path = "~/pylog/pylog.log"
+path = "pylog/pylog.log"
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 # add a rotating handler
