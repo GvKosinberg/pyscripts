@@ -134,7 +134,7 @@ class Device:
         '''
             Метод отправки команды на конечное устройство
         '''
-        log.debug("SENT from: %s NUDES: %s" % (msg.topic, msg.payload))
+        log.debug("SENT from: %s DATA: %s" % (msg.topic, msg.payload))
         # Для устройств типа "реле"
         if self.d_type == 'RELAY':
             log.debug("AMA RELAY: %s, VAL: %s" % (self.name, msg.payload))
@@ -451,5 +451,8 @@ if __name__ == "__main__":
             log.info("Current time %s" % now)
             read_real(rfm, snc_list, mqtt_client)
             log.debug("//===========//")
+    except Exception as e:
+        log.critical("Script has fallen")
+        log.critical(str(e))
     except KeyboardInterrupt:
         log.info("That's all, folks")
