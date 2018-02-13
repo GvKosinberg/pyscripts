@@ -153,7 +153,7 @@ class Device:
             Метод отправки команды на конечное устройство
         '''
         log.debug("SENT from: %s DATA: %s" % (msg.topic, msg.payload))
-        data_pack = convert_data(msg)
+        data_pack = self.convert_data(msg)
         log.debug("Data 2 transmit: %s" )
 
 
