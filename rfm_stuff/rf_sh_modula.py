@@ -145,7 +145,7 @@ class Device:
         # DEBUG: 4 relays
         data_pack[4] = 1 if msg.payload == ON else 0
 
-        return data pack
+        return data_pack
 
 
     def write2device(self, clnt, usrdt, msg):
@@ -154,6 +154,7 @@ class Device:
         '''
         log.debug("SENT from: %s DATA: %s" % (msg.topic, msg.payload))
         data_pack = convert_data(msg)
+        log.debug("Data 2 transmit: %s" %msg)
 
 
 
