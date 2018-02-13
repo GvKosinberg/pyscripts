@@ -14,7 +14,7 @@ def init_rfm():
 
 def read_regs(rfm):
     for i in range(0, 0x71):
-        reg_val = rfm.read_register(i)
+        reg_val = int(rfm.read_register(i))
         print("REG: %s : %s" %(hex(i), hex(reg_val)))
 
 if __name__ == '__main__':
