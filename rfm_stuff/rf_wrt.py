@@ -26,6 +26,8 @@ def write_true(i):
     # pack[1] =
     rfm.send_packet(pack)
 
+def wait_4_responce(rfm):
+    rfm.wait_for_packet(10)
 
 if __name__ == '__main__':
     rfm = init_rfm()
@@ -34,6 +36,7 @@ if __name__ == '__main__':
         while True:
             msg = 1 if msg == 0 else 0
             write_true(msg)
+            wait_4_responce(rfm)
 
             time.sleep(10)
     except KeyboardInterrupt:
