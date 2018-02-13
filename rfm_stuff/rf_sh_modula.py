@@ -154,7 +154,7 @@ class Device:
         '''
         log.debug("SENT from: %s DATA: %s" % (msg.topic, msg.payload))
         data_pack = self.convert_data(msg)
-        log.debug("Data 2 transmit: %s" %msg)
+        log.debug("Data 2 transmit: %s" %data_pack)
 
 
 
