@@ -13,7 +13,7 @@ def init_rfm():
     return rfm_unit
 
 def read_regs(rfm):
-    for i in range(0, 0x71):
+    for i in range(0x0, 0x70):
         reg_val = rfm.read_register(i)
         print("REG: %s : %s" %(hex(i), hex(reg_val)))
 
