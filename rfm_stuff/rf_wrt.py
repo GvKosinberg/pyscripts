@@ -38,6 +38,6 @@ if __name__ == '__main__':
             write_true(msg)
             wait_4_responce(rfm)
 
-            time.sleep(10)
+            #time.sleep(10)
     except KeyboardInterrupt:
         print("That's all, folks")
