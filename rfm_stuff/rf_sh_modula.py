@@ -143,7 +143,7 @@ class Device:
 
         data_mqtt = msg.payload
         # DEBUG: 4 relays
-        data_pack[4] = 1 if msg.payload == ON else 0
+        data_pack[4] = 1 if msg.payload == "ON" else 0
 
         return data_pack
 
