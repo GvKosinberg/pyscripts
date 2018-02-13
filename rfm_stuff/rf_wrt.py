@@ -19,7 +19,7 @@ def init_rfm():
     return rfm_unit
 
 def write_true(i):
-    pack = [210, 0, 14, 0]
+    pack = [210, 0, 14, 0, 0]
     pack[4] = i
     # pack[0] = 210
     # pack[1] =
