@@ -24,7 +24,7 @@ from logging.handlers import TimedRotatingFileHandler
 """
 
 path = "pylog/pylog.log"
-log = logging.getLogger(__name__).addHandler(logging.NullHandler())
+log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 # add a rotating handler
