@@ -31,7 +31,7 @@ if __name__ == '__main__':
     msg = 0
     try:
         while True:
-            msg = 1 if msg == 0 else msg = 0
+            msg = 1 if msg == 0 else 0
             write_true(msg)
 
             time.sleep(10)
