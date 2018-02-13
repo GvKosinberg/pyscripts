@@ -130,18 +130,31 @@ class Device:
         else:
             log.error("Invalid device type: %s" % d_type)
 
+    def convert_data(self, msg):
+        data_pack = [0, 0, 0, 0, 0]
+        # NOTE: device self id/name
+        data_pack[0] = int(self.name)
+        # NOTE: server/hub addr
+        data_pack[1] = 0
+        # TODO: device group id
+        data_pack[2] = 14
+        # XXX: cnt of cmd ???
+        data_pack[3] = 0
+
+        data_mqtt = msg.payload
+        # DEBUG: 4 relays
+        data_pack[4] = 1 if msg.payload == ON else 0
+
+        return data pack
+
+
     def write2device(self, clnt, usrdt, msg):
         '''
             Метод отправки команды на конечное устройство
         '''
         log.debug("SENT from: %s DATA: %s" % (msg.topic, msg.payload))
-        # Для устройств типа "реле"
-        if self.d_type == 'RELAY':
-            log.debug("AMA RELAY: %s, VAL: %s" % (self.name, msg.payload))
-        # Для диммеров
-        else:
-            log.debug("AMA: %s:%s, VAL: %s" % (
-                self.d_type, self.name, msg.payload))
+        data_pack = convert_data(msg)
+
 
 
 class Sencor:
