@@ -231,7 +231,7 @@ class Device(object):
         mqtt_c - экземпляр paho.mqtt.Client
     """
 
-    def __init__(self, d_type, name, rfm, mqtt_c):
+    def __init__(self, d_type, name, rpi_hub):
         '''
             Инициализация объекта
         '''
@@ -244,8 +244,9 @@ class Device(object):
         }
         if d_type in __types_devices:
             self.rfm = rfm
-            self.mqtt_c = mqtt_c
-            self.d_type = d_type
+            self.rpi_hub = rpi_hub
+            self.rfm = self.rpi_hub.
+            self.mqtt_c = self.rpi_hub.mqtt_client
             self.name = name
             # топик в mqtt-брокере
             self.topic = "oh/"+__types_devices[d_type]+name+"/val"
@@ -295,7 +296,7 @@ class Sencor(object):
         timeout - время таймаута
     """
 
-    def __init__(self, d_type, name, rfm, mqtt_c, timeout):
+    def __init__(self, d_type, name, rpi_hub, timeout=60):
         '''
             Инициализация объекта
         '''
@@ -314,8 +315,9 @@ class Sencor(object):
                         'CNTR': "oh/cntrs/"
         }
         if d_type in __types_sncs:
-            self.rfm = rfm
-            self.mqtt_c = mqtt_c
+            self.rpi_hub = rpi_hub
+            self.rfm = rpi_hub.rfm
+            self.mqtt_c = rpi_hub.mqtt_client
             self.d_type = d_type
             self.name = name
             # топики в mqtt-брокере
