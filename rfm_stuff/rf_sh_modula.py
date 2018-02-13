@@ -306,7 +306,7 @@ def send_raw_data(income, mqc):
         log.debug("RAW DATA SENT")
     except Exception as e:
         log.warn("Bad packet received: %s", e)
-        log.warn("Packet: %s" % hex(income))
+        log.warn("Packet: %s" % income)
 
 
 def read_real(rfm, snc_list, mqc):
