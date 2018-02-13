@@ -4,6 +4,8 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger("testo")
 
+
+s = 0
 def init_rfm():
     myconf = rfm69.RFM69Configuration()
     rfm_unit = rfm69.RFM69(
@@ -16,8 +18,9 @@ def init_rfm():
     #rfm_unit.config.packet_config_1.variable_length = False
     return rfm_unit
 
-def write_true():
-    pack = [210, 0, 14, 0, 0b00]
+def write_true(i):
+    pack = [210, 0, 14, 0]
+    pack[4] = i
     # pack[0] = 210
     # pack[1] =
     rfm.send_packet(pack)
@@ -25,7 +28,12 @@ def write_true():
 
 if __name__ == '__main__':
     rfm = init_rfm()
+    msg = 0
     try:
-        write_true()
+        while True:
+            msg = 1 if msg == 0 else msg = 0
+            write_true(msg)
+
+            time.sleep(10)
     except KeyboardInterrupt:
         print("That's all, folks")
