@@ -22,7 +22,7 @@ if __name__ == '__main__':
         while(True):
             cnt_min += 1
             print("Iter #: %s" % cnt_min)
-            income = rfm.wait_for_packet(60)
+            income = rfm.wait_for_packet(10)
             if type(income) == tuple:
                 num_pack = income[0][3]
                 log.info("///////////======================///////////")
