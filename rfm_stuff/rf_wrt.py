@@ -17,7 +17,7 @@ def init_rfm():
     return rfm_unit
 
 def write_true():
-    pack = [210, 0, 14, 0, 0b01]
+    pack = [210, 0, 14, 0, 0b00]
     # pack[0] = 210
     # pack[1] =
     rfm.send_packet(pack)
