@@ -19,9 +19,10 @@ def init_rfm():
     #rfm_unit.config.packet_config_1.variable_length = False
     return rfm_unit
 
-def write_true(i):
+def write_true(i, n):
     pack = [210, 0, 14, 0, 0]
     pack[4] = i
+    pack[3] = n
     # pack[0] = 210
     # pack[1] =
     rfm.send_packet(pack)
@@ -32,12 +33,14 @@ def wait_4_responce(rfm):
 if __name__ == '__main__':
     rfm = init_rfm()
     msg = 0
+    inc = 0
     try:
         while True:
             log.debug("##############################################")
-            msg = 1 if msg == 0 else 0
-            write_true(msg)
+            write_true(msg, inc)
             wait_4_responce(rfm)
+            msg = 1 if msg == 0 else 0
+            inc += 1
 
             #time.sleep(10)
     except KeyboardInterrupt:
