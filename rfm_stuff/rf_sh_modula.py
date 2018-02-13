@@ -243,10 +243,7 @@ class Device(object):
                         'DIM_TRMRL': "devices/dimmers/trmrl/",
         }
         if d_type in __types_devices:
-            self.rfm = rfm
             self.rpi_hub = rpi_hub
-            self.rfm = self.rpi_hub.
-            self.mqtt_c = self.rpi_hub.mqtt_client
             self.name = name
             # топик в mqtt-брокере
             self.topic = "oh/"+__types_devices[d_type]+name+"/val"
@@ -255,6 +252,7 @@ class Device(object):
             # Создание event в случае поступления сообщения в топик
             # NOTE: работает даже в time.sleep, rfm.wait_for_packet
             self.mqtt_c.message_callback_add(self.topic, self.write2device)
+            self.rpi_hub.add_snc(self)
         else:
             log.error("Invalid device type: %s" % d_type)
 
@@ -316,8 +314,6 @@ class Sencor(object):
         }
         if d_type in __types_sncs:
             self.rpi_hub = rpi_hub
-            self.rfm = rpi_hub.rfm
-            self.mqtt_c = rpi_hub.mqtt_client
             self.d_type = d_type
             self.name = name
             # топики в mqtt-брокере
