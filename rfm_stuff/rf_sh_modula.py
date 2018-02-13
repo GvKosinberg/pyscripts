@@ -47,55 +47,182 @@ log.addHandler(ch)
 log.addHandler(rfh)
 
 
-def init_rfm():
-    """
-        Инициализация RFM69
-        На выходе объект класса rfm69
-    """
-    myconf = rfm69.RFM69Configuration()
-    rfm_unit = rfm69.RFM69(
-                            dio0_pin=24,
-                            reset_pin=22,
-                            spi_channel=0,
-                            config=myconf)
-    # setting RSSI treshold
-    rfm_unit.set_rssi_threshold(-114)
-    return rfm_unit
+class rpi_hub(object):
+    def __init__(self):
+        self.rfm = self.rfm_init()
+        self.mqtt_client = self.mqtt_init()
+        self.snc_list = []
+
+    def add_snc(self, snc):
+        self.snc_list.append(snc)
+
+    def rfm_init(self):
+        """
+            Инициализация RFM69
+            На выходе объект класса rfm69
+        """
+        myconf = rfm69.RFM69Configuration()
+        rfm_unit = rfm69.RFM69(
+                                dio0_pin=24,
+                                reset_pin=22,
+                                spi_channel=0,
+                                config=myconf)
+        # setting RSSI treshold
+        rfm_unit.set_rssi_threshold(-114)
+        return rfm_unit
 
 
-def mqtt_on_connect(client, userdata, flags, rc):
-    '''
-        При подключении к порту брокера
-    '''
-    log.info("Connected to MQTT with rc: %s" % rc)
+    def mqtt_on_connect(self, client, userdata, flags, rc):
+        '''
+            При подключении к порту брокера
+        '''
+        log.info("Connected to MQTT with rc: %s" % rc)
 
 
-def mqtt_on_disconnect(client, userdata, rc):
-    '''
-        При отключении от брокера
-    '''
-    if rc != 0:
-        log.warn("Unexpected disconnection")
-    else:
-        log.info("Expected disconnection")
+    def mqtt_on_disconnect(self, client, userdata, rc):
+        '''
+            При отключении от брокера
+        '''
+        if rc != 0:
+            log.warn("Unexpected disconnection")
+        else:
+            log.info("Expected disconnection")
 
 
-def mqtt_init():
-    """
-        Функция инициализации клиента mqtt
-        на выходе - объект класса mqtt.client
-    """
-    mqtt_client = mqtt.Client()
-    mqtt_client.on_connect = mqtt_on_connect
-    mqtt_client.on_disconnect = mqtt_on_disconnect
+    def mqtt_init(self):
+        """
+            Функция инициализации клиента mqtt
+            на выходе - объект класса mqtt.client
+        """
+        mqtt_client = mqtt.Client()
+        mqtt_client.on_connect = self.mqtt_on_connect
+        mqtt_client.on_disconnect = self.mqtt_on_disconnect
 
-    mqtt_client.connect("localhost", 1883, 60)
-    log.debug("start loop")
-    mqtt_client.loop_start()
-    return mqtt_client
+        mqtt_client.connect("localhost", 1883, 60)
+        log.debug("start loop")
+        mqtt_client.loop_start()
+        return mqtt_client
+
+    def send_raw_data(self, income):
+        """
+            Тестовая штука для отсылки сырых данных в топики debug/
+        """
+
+        __types = {
+                    '0': "SNC_T_AIR",
+                    '3': "SNC_LUMI",
+                    '6': 'CNTR',
+                    '7': "SNC_DOOR",
+                    '14': "DEV_RELAY",
+                    '3378': "ENCLAVE"
+        }
+        try:
+            addr_r = str(income[0][1])
+            type_r = str(income[0][2])
+
+            topic_base = "debug/" + __types[type_r] + "/" + addr_r
+
+            topic_arr = topic_base + "/arr"
+            array = income[0]
+            data = ""
+            for i in array:
+                data += str(hex(i)) + " "
+            self.mqtt_client.publish(topic_arr, data)
+            log.debug("RAW Topic %s, %s" % (topic_arr, data))
+
+            topic_rssi = topic_base + "/rssi"
+            data = str(income[1])
+            self.mqtt_client.publish(topic_rssi, data)
+            log.debug("RAW Topic %s, %s" % (topic_rssi, data))
+
+            log.debug("RAW DATA SENT")
+        except Exception as e:
+            log.warn("Bad packet received: %s", e)
+            log.warn("Packet: %s" % income)
+
+    def read_real(self):
+        """
+            Метод чтения данных с rfm
+        """
+
+        # коды типов устройств и соответствующие им ключи
+        __types = {
+                    '0': "SNC_T_AIR",
+                    '3': "SNC_LUMI",
+                    '3378': "ENCLAVE"
+        }
+        __errors = {
+                    'SNC_T_AIR': [0x7FF, 0x00, ],
+                    'SNC_LUMI': [0xFFFF, 0x00, ],
+        }
+
+        # Ожидание сообщения
+        inc_data = self.rfm.wait_for_packet(59)
+
+        # Проверка данных (если данные не пришли type(inc_data!=None))
+        # если ответ пришел, данные записываются в кортеж
+        if type(inc_data) == tuple:
+            # TEMP: Тестовая хренотень
+            send_raw_data(inc_data)
+            concat_inc(inc_data)
+
+    def concat_data(self, inc_data):
+        d_addr = 0
+        d_type = "-"
+        d_rssi = 0
+        d_packid = 0
+        d_bat = 0
+        __data_lb = 0
+        __data_sb = 0
+        data_sum = 0
+        try:
+            # адрес устройства
+            d_addr = inc_data[0][1]
+            # код типа устройства
+            d_type = str(inc_data[0][2])
+            # Уровень сигнала
+            d_rssi = inc_data[1]
+            # Номер пакета
+            d_packid = inc_data[0][3]
+            # Уровень батареи
+            d_bat = inc_data[0][4]
+
+            # Младший байт данных
+            __data_lb = inc_data[0][5]
+            # Старший байт данных
+            __data_sb = inc_data[0][6] << 8
+        except Exception as e:
+            log.error("Bad pack received: %s" % inc_data)
+            log.error("Exception: %s", e)
+        # Проверка на наличие кода типа в списке
+        if (d_type in __types):
+            # Присвоение ключа по коду
+            r_type = __types[d_type]
+            # Присвоение имени (string)
+            r_name = str(d_addr)
+
+            if (data_lb | data_sb) in __errors[r_type]:
+                data_sum = "Ошибка датчика"
+            else:
+                # Преобразования данных для различных типов датчиков
+                if (r_type == "SNC_T_AIR"):
+                    d_s = (data_lb | data_sb) & 0xFFF
+                    data_sum = str(d_s/10.00) + " °C"
+                elif (r_type == "SNC_LUMI"):
+                    data_sum = str(data_lb | data_sb) + " люкс"
+            self.update_data(r_type, r_name, data_sum)
+
+    def update_data(self, r_type, r_name, data):
+        for snc in self.snc_list:
+            if (snc.d_type == r_type) and (snc.name == r_name):
+                snc.last_responce = time.time()
+                snc.data = data
+                snc.write2mqtt()
+                log.info("Sencor %s data updated" % (snc.d_type+":"+snc.name))
 
 
-class Device:
+
+class Device(object):
     """
         Класс исполнительных устройств
         d_type - тип устройства в формате __types_devices (string)
@@ -158,7 +285,7 @@ class Device:
 
 
 
-class Sencor:
+class Sencor(object):
     """
         Класс исполнительных устройств
         d_type - тип устройства в формате __types_devices (string)
@@ -283,149 +410,6 @@ class Sencor:
 
         self.last_responce = time.time()
         return out
-
-
-def send_raw_data(income, mqc):
-    """
-        Тестовая штука для отсылки сырых данных в топики debug/
-    """
-
-    __types = {
-                '0': "SNC_T_AIR",
-                '3': "SNC_LUMI",
-                '6': 'CNTR',
-                '7': "SNC_DOOR",
-                '14': "DEV_RELAY",
-                '3378': "ENCLAVE"
-    }
-    try:
-        addr_r = str(income[0][1])
-        type_r = str(income[0][2])
-
-        topic_base = "debug/" + __types[type_r] + "/" + addr_r
-
-        topic_arr = topic_base + "/arr"
-        array = income[0]
-        data = ""
-        for i in array:
-            data += str(hex(i)) + " "
-        mqc.publish(topic_arr, data)
-        log.debug("RAW Topic %s, %s" % (topic_arr, data))
-
-        topic_rssi = topic_base + "/rssi"
-        data = str(income[1])
-        mqc.publish(topic_rssi, data)
-        log.debug("RAW Topic %s, %s" % (topic_rssi, data))
-
-        log.debug("RAW DATA SENT")
-    except Exception as e:
-        log.warn("Bad packet received: %s", e)
-        log.warn("Packet: %s" % income)
-
-
-def read_real(rfm, snc_list, mqc):
-    """
-        Функция чтения занчений с rfm
-        если ничего не поступило, функция записи в mqtt все равно
-        будет вызвана, т.к. там есть метод проверки таймаута ответа
-    """
-
-    # коды типов устройств и соответствующие им ключи
-    __types = {
-                '0': "SNC_T_AIR",
-                '3': "SNC_LUMI",
-                '3378': "ENCLAVE"
-    }
-    __errors = {
-                'SNC_T_AIR': [0x7FF, 0x00, ],
-                'SNC_LUMI': [0xFFFF, 0x00, ],
-    }
-    r_type = "-"
-    r_name = "-"
-    d_rssi = 0
-    d_bat = 0
-    d_packid = 0
-    # Итоговые данные
-    data_sum = 0
-
-    # TEMP: flag
-    flag_inc = False
-
-    # Ожидание сообщения
-    inc_data = rfm.wait_for_packet(59)
-
-    # Проверка данных (если данные не пришли type(inc_data!=None))
-    # если ответ пришел, данные записываются в кортеж
-    if type(inc_data) == tuple:
-        # TEMP: Тестовая хренотень
-        send_raw_data(inc_data, mqc)
-        try:
-            # адрес устройства
-            d_addr = inc_data[0][1]
-            # код типа устройства
-            d_type = str(inc_data[0][2])
-            # Уровень сигнала
-            d_rssi = inc_data[1]
-            # Номер пакета
-            d_packid = inc_data[0][3]
-            # Уровень батареи
-            d_bat = inc_data[0][4]
-
-            # Младший байт данных
-            data_lb = inc_data[0][5]
-            # Старший байт данных
-            data_sb = inc_data[0][6] << 8
-        except Exception as e:
-            log.error("Bad pack received: %s" % inc_data)
-            log.error("Exception: %s", e)
-        # Проверка на наличие кода типа в списке
-        # TODO: убрать адрес левого датчика
-        if (d_type in __types) and (d_addr != 0xcd):
-            # Присвоение ключа по коду
-            r_type = __types[d_type]
-            # Присвоение имени (string)
-            r_name = str(d_addr)
-            # TEMP: flagg
-            flag_inc = True
-
-            if (data_lb | data_sb) in __errors[r_type]:
-                data_sum = "Ошибка датчика"
-            else:
-                # Преобразования данных для различных типов датчиков
-                if (r_type == "SNC_T_AIR"):
-                    d_s = (data_lb | data_sb) & 0xFFF
-                    data_sum = str(d_s/10.00) + " °C"
-                elif (r_type == "SNC_LUMI"):
-                    data_sum = str(data_lb | data_sb) + " люкс"
-
-    # Проход списка объектов класса Sencor
-    for obj in snc_list:
-        # Если имя и тип совпали с прочитанными на rfm
-        if obj.d_type == r_type and obj.name == r_name:
-            # Если установлен флаг принятого пакета
-            if flag_inc:
-                obj.data = data_sum
-                obj.last_data = data_sum
-                obj.rssi = d_rssi
-                obj.bat_lvl = d_bat
-                obj.pack_id = d_packid
-                obj.last_responce = time.time()
-                flag_inc = False
-        # Вызов метода публикаци данных в брокере
-        obj.write2mqtt()
-
-
-def get_snc_list():
-    """
-        Функция составления списка всех объектов класса Sencor
-        на выходе - list[Sencor]
-    """
-
-    snc_list = []
-    for obj in gc.get_objects():
-        if isinstance(obj, Sencor):
-            snc_list.append(obj)
-    return snc_list
 
 
 # DEBUG: just 4 tests
