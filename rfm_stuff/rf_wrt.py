@@ -1,5 +1,6 @@
 import rfm69
 import logging
+import time
 
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger("testo")
