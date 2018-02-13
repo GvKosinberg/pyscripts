@@ -13,9 +13,9 @@ def init_rfm():
     return rfm_unit
 
 def read_regs(rfm):
-    t_r_v = rfm.read_register(0x01)
+    rfm.read_register(0x01)
     for i in range(0x0, 0x70):
-        reg_val = rfm.read_register(i)
+        reg_val = rfm.spi_read(i)
         print("REG: %s : %s" %(hex(i), hex(reg_val)))
 
 if __name__ == '__main__':
