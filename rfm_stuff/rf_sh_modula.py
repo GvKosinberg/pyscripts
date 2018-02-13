@@ -143,7 +143,7 @@ class Device:
 
         data_mqtt = msg.payload
         # DEBUG: 4 relays
-        data_pack[4] = 1 if msg.payload == ON else 0
+        data_pack[4] = 1 if msg.payload == "ON" else 0
 
         return data_pack
 
@@ -154,7 +154,7 @@ class Device:
         '''
         log.debug("SENT from: %s DATA: %s" % (msg.topic, msg.payload))
         data_pack = self.convert_data(msg)
-        log.debug("Data 2 transmit: %s" )
+        log.debug("Data 2 transmit: %s" % data_pack)
 
 
 
