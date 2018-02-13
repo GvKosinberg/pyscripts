@@ -13,6 +13,7 @@ def init_rfm():
                             config=myconf)
     # setting RSSI treshold
     rfm_unit.set_rssi_threshold(-114)
+    rfm_unit.config.packet_config_1.variable_length = False
     return rfm_unit
 
 def write_true():
