@@ -121,7 +121,7 @@ class Device:
             self.d_type = d_type
             self.name = name
             # топик в mqtt-брокере
-            self.topic = "oh/"+__types_devices[d_type]+name
+            self.topic = "oh/"+__types_devices[d_type]+name+"/val"
             # подписка на топик
             self.mqtt_c.subscribe(self.topic)
             # Создание event в случае поступления сообщения в топик
@@ -143,7 +143,7 @@ class Device:
 
         data_mqtt = msg.payload
         # DEBUG: 4 relays
-        data_pack[4] = 1 if msg.payload == "ON" else 0
+        data_pack[4] = 1 if msg.payload == ON else 0
 
         return data_pack
 
@@ -153,8 +153,8 @@ class Device:
             Метод отправки команды на конечное устройство
         '''
         log.debug("SENT from: %s DATA: %s" % (msg.topic, msg.payload))
-        data_pack = self.convert_data(msg)
-        log.debug("Data 2 transmit: %s" %data_pack)
+        data_pack = convert_data(msg)
+        log.debug("Data 2 transmit: %s" )
 
 
 
