@@ -113,15 +113,15 @@ class rpi_hub(object):
         return mqtt_client
 
     def loop(self):
-        while True:
-            try:
+        try:
+            while True:
                 self.read_real()
                 self.katok()
-            except Exception as e:
-                log.critical("Script has fallen")
-                log.critical(str(e))
-            except KeyboardInterrupt:
-                log.info("That's all, folks")
+        except Exception as e:
+            log.critical("Script has fallen")
+            log.critical(str(e))
+        except KeyboardInterrupt:
+            log.info("That's all, folks")
 
     def katok(self):
         log.debug("qq: %s" % self.snc_list)
