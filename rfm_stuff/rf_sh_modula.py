@@ -260,7 +260,6 @@ class Device(object):
             # Создание event в случае поступления сообщения в топик
             # NOTE: работает даже в time.sleep, rfm.wait_for_packet
             self.mqtt_c.message_callback_add(self.topic, self.write2device)
-            self.rpi_hub.add_snc(self)
         else:
             log.error("Invalid device type: %s" % d_type)
 
