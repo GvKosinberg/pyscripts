@@ -113,8 +113,15 @@ class rpi_hub(object):
         return mqtt_client
 
     def loop(self):
-        self.read_real()
-        self.katok()
+        while True:
+            try:
+                self.read_real()
+                self.katok()
+            except Exception as e:
+                log.critical("Script has fallen")
+                log.critical(str(e))
+            except KeyboardInterrupt:
+                log.info("That's all, folks")
 
     def katok(self):
         for snc in self.snc_list:
@@ -447,12 +454,4 @@ if __name__ == "__main__":
     fake_step = Device("DIM_STEP", "1", rpi_hub)
     fake_trmrl = Device("DIM_TRMRL", "1", rpi_hub)
 
-    try:
-        log.info("Enter the cycle")
-        while(True):
-            rpi_hub.loop()
-    except Exception as e:
-        log.critical("Script has fallen")
-        log.critical(str(e))
-    except KeyboardInterrupt:
-        log.info("That's all, folks")
+    rpi_hub.loop()
