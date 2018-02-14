@@ -170,7 +170,7 @@ class rpi_hub(object):
         if type(inc_data) == tuple:
             # TEMP: Тестовая хренотень
             self.send_raw_data(inc_data)
-            self.concat_inc(inc_data)
+            self.concat_data(inc_data)
 
     def concat_data(self, inc_data):
         d_addr = 0
