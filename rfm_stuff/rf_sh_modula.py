@@ -117,7 +117,7 @@ class rpi_hub(object):
         self.katok()
 
     def katok(self):
-        for snc in snc_list:
+        for snc in self.snc_list:
             snc.write2mqtt()
 
     def send_raw_data(self, income):
