@@ -51,6 +51,17 @@ class rpi_hub(object):
         self.rfm = self.rfm_init()
         self.mqtt_client = self.mqtt_init()
         self.snc_list = []
+        # коды типов устройств и соответствующие им ключи
+        self.types = {
+                    '0': "SNC_T_AIR",
+                    '3': "SNC_LUMI",
+                    '3378': "ENCLAVE"
+        }
+        self.errors = {
+                    'SNC_T_AIR': [0x7FF, 0x00, ],
+                    'SNC_LUMI': [0xFFFF, 0x00, ],
+        }
+
 
     def add_snc(self, snc):
         self.snc_list.append(snc)
@@ -151,17 +162,6 @@ class rpi_hub(object):
             Метод чтения данных с rfm
         """
 
-        # коды типов устройств и соответствующие им ключи
-        __types = {
-                    '0': "SNC_T_AIR",
-                    '3': "SNC_LUMI",
-                    '3378': "ENCLAVE"
-        }
-        __errors = {
-                    'SNC_T_AIR': [0x7FF, 0x00, ],
-                    'SNC_LUMI': [0xFFFF, 0x00, ],
-        }
-
         # Ожидание сообщения
         inc_data = self.rfm.wait_for_packet(59)
 
@@ -201,13 +201,13 @@ class rpi_hub(object):
             log.error("Bad pack received: %s" % inc_data)
             log.error("Exception: %s", e)
         # Проверка на наличие кода типа в списке
-        if (d_type in __types):
+        if (d_type in self.types):
             # Присвоение ключа по коду
-            r_type = __types[d_type]
+            r_type = self.types[d_type]
             # Присвоение имени (string)
             r_name = str(d_addr)
 
-            if (data_lb | data_sb) in __errors[r_type]:
+            if (data_lb | data_sb) in self.errors[r_type]:
                 data_sum = "Ошибка датчика"
             else:
                 # Преобразования данных для различных типов датчиков
