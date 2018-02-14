@@ -328,7 +328,7 @@ class Sencor(object):
         }
         if d_type in __types_sncs:
             self.rpi_hub = rpi_hub
-            self.mqtt_c = rpi_hub.mqtt_c
+            self.mqtt_c = rpi_hub.mqtt_client
             self.d_type = d_type
             self.name = name
             # топики в mqtt-брокере
