@@ -23,7 +23,7 @@ from logging.handlers import TimedRotatingFileHandler
     Подключение логера
 """
 
-path = "pylog/pylog.log"
+path = "/home/pi/pyscripts/pylog/pylog.log"
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
