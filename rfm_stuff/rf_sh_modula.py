@@ -108,7 +108,7 @@ class rpi_hub(object):
     def katok(self):
         for snc in snc_list:
             snc.write2mqtt()
-            
+
     def send_raw_data(self, income):
         """
             Тестовая штука для отсылки сырых данных в топики debug/
@@ -250,6 +250,8 @@ class Device(object):
         }
         if d_type in __types_devices:
             self.rpi_hub = rpi_hub
+            self.rfm = rpi_hub.rfm
+            self.mqtt_c = rpi_hub.mqtt_client
             self.name = name
             # топик в mqtt-брокере
             self.topic = "oh/"+__types_devices[d_type]+name+"/val"
