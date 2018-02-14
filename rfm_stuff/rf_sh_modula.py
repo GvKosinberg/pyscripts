@@ -7,7 +7,6 @@
 """
 import os
 import sys
-import gc
 
 import rfm69
 import paho.mqtt.client as mqtt
@@ -23,7 +22,7 @@ from logging.handlers import TimedRotatingFileHandler
     Подключение логера
 """
 
-path = "pylog/pylog.log"
+path = "/home/pi/pyscripts/pylog/pylog.log"
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
