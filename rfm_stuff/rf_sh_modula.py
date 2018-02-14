@@ -124,6 +124,7 @@ class rpi_hub(object):
                 log.info("That's all, folks")
 
     def katok(self):
+        log.debug("qq: %s" % self.snc_list)
         for snc in self.snc_list:
             snc.write2mqtt()
 
