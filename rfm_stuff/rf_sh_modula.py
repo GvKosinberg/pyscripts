@@ -98,10 +98,17 @@ class rpi_hub(object):
         mqtt_client.on_disconnect = self.mqtt_on_disconnect
 
         mqtt_client.connect("localhost", 1883, 60)
-        log.debug("start loop")
         mqtt_client.loop_start()
         return mqtt_client
 
+    def loop(self):
+        self.read_real()
+        self.katok()
+
+    def katok(self):
+        for snc in snc_list:
+            snc.write2mqtt()
+            
     def send_raw_data(self, income):
         """
             Тестовая штука для отсылки сырых данных в топики debug/
@@ -137,7 +144,7 @@ class rpi_hub(object):
             log.debug("RAW DATA SENT")
         except Exception as e:
             log.warn("Bad packet received: %s", e)
-            log.warn("Packet: %s" % income)
+            log.warn("Packet: %s" % income[0])
 
     def read_real(self):
         """
@@ -205,10 +212,10 @@ class rpi_hub(object):
             else:
                 # Преобразования данных для различных типов датчиков
                 if (r_type == "SNC_T_AIR"):
-                    d_s = (data_lb | data_sb) & 0xFFF
+                    d_s = (__data_lb | __data_sb) & 0xFFF
                     data_sum = str(d_s/10.00) + " °C"
                 elif (r_type == "SNC_LUMI"):
-                    data_sum = str(data_lb | data_sb) + " люкс"
+                    data_sum = str(__data_lb | __data_sb) + " люкс"
             self.update_data(r_type, r_name, data_sum)
 
     def update_data(self, r_type, r_name, data):
@@ -411,41 +418,39 @@ class Sencor(object):
 
 # DEBUG: just 4 tests
 if __name__ == "__main__":
-    rfm = init_rfm()
-    mqtt_client = mqtt_init()
+
+    rpi_hub = rpi_hub()
     # try:
     log.info("Init of devices")
-    fake_t_air = Sencor("SNC_T_AIR", "1", rfm, mqtt_client, 1080)
-    fake_t_wat = Sencor("SNC_T_WATER", "1", rfm, mqtt_client, 60)
-    fake_t_heat = Sencor("SNC_T_HEATER", "1", rfm, mqtt_client, 60)
+    fake_t_air = Sencor("SNC_T_AIR", "1", rpi_hub)
+    fake_t_wat = Sencor("SNC_T_WATER", "1", rpi_hub)
+    fake_t_heat = Sencor("SNC_T_HEATER", "1", rpi_hub)
 
-    fake_humi = Sencor("SNC_HUMI", "1", rfm, mqtt_client, 60)
-    fake_lumi = Sencor("SNC_LUMI", "9", rfm, mqtt_client, 1080)
+    fake_humi = Sencor("SNC_HUMI", "1", rpi_hub)
+    fake_lumi = Sencor("SNC_LUMI", "9", rpi_hub)
 
-    fake_door = Sencor("SNC_DOOR", "1", rfm, mqtt_client, 60)
+    fake_door = Sencor("SNC_DOOR", "1", rpi_hub)
 
-    fake_leak = Sencor("WARN_LEAK", "1", rfm, mqtt_client, 60)
-    fake_smoke = Sencor("WARN_SMOKE", "1", rfm, mqtt_client, 60)
-    fake_flame = Sencor("WARN_FLAME", "1", rfm, mqtt_client, 60)
+    fake_leak = Sencor("WARN_LEAK", "1", rpi_hub)
+    fake_smoke = Sencor("WARN_SMOKE", "1", rpi_hub)
+    fake_flame = Sencor("WARN_FLAME", "1", rpi_hub)
 
-    fake_pres = Sencor("PRES_PRES", "1", rfm, mqtt_client, 60)
-    fake_mot = Sencor("PRES_MOT", "1", rfm, mqtt_client, 60)
+    fake_pres = Sencor("PRES_PRES", "1", rpi_hub)
+    fake_mot = Sencor("PRES_MOT", "1", rpi_hub)
 
-    fake_cntr = Sencor("CNTR", "1", rfm, mqtt_client, 60)
+    fake_cntr = Sencor("CNTR", "1", rpi_hub)
 
-    fake_relay = Device("RELAY", "1", rfm, mqtt_client)
-    fake_crane = Device("DIM_CRANE", "1", rfm, mqtt_client)
-    fake_curt = Device("DIM_CURT", "1", rfm, mqtt_client)
-    fake_step = Device("DIM_STEP", "1", rfm, mqtt_client)
-    fake_trmrl = Device("DIM_TRMRL", "1", rfm, mqtt_client)
+    fake_relay = Device("RELAY", "1", rpi_hub)
+    fake_crane = Device("DIM_CRANE", "1", rpi_hub)
+    fake_curt = Device("DIM_CURT", "1", rpi_hub)
+    fake_step = Device("DIM_STEP", "1", rpi_hub)
+    fake_trmrl = Device("DIM_TRMRL", "1", rpi_hub)
     snc_list = get_snc_list()
 
     try:
         log.info("Enter the cycle")
         while(True):
-            log.info("New iter")
-            read_real(rfm, snc_list, mqtt_client)
-            log.debug("//===========//")
+            rpi_hub.loop()
     except Exception as e:
         log.critical("Script has fallen")
         log.critical(str(e))
