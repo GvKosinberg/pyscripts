@@ -124,7 +124,6 @@ class rpi_hub(object):
             log.info("That's all, folks")
 
     def katok(self):
-        log.debug("qq: %s" % self.snc_list)
         for snc in self.snc_list:
             snc.write2mqtt()
 
@@ -329,6 +328,7 @@ class Sencor(object):
         }
         if d_type in __types_sncs:
             self.rpi_hub = rpi_hub
+            self.mqtt_c = rpi_hub.mqtt_c
             self.d_type = d_type
             self.name = name
             # топики в mqtt-брокере
