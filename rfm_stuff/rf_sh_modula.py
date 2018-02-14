@@ -47,9 +47,17 @@ log.addHandler(rfh)
 
 
 class rpi_hub(object):
+    """
+        Класс центрального хаба для устройств, в сущности просто объединение
+        объектов rfm, mqtt_client. Включает в себя список инициализированных
+        датчиков, для прохода и обновления данных в брокере.
+    """
     def __init__(self):
+        # Объект rfm69
         self.rfm = self.rfm_init()
+        # Объект клиента mqtt брокера
         self.mqtt_client = self.mqtt_init()
+        # Список датчиков
         self.snc_list = []
         # коды типов устройств и соответствующие им ключи
         self.types = {
@@ -62,8 +70,10 @@ class rpi_hub(object):
                     'SNC_LUMI': [0xFFFF, 0x00, ],
         }
 
-
     def add_snc(self, snc):
+        """
+            Добавить объект класса Sencor в список
+        """
         self.snc_list.append(snc)
 
     def rfm_init(self):
@@ -81,13 +91,11 @@ class rpi_hub(object):
         rfm_unit.set_rssi_threshold(-114)
         return rfm_unit
 
-
     def mqtt_on_connect(self, client, userdata, flags, rc):
         '''
             При подключении к порту брокера
         '''
         log.info("Connected to MQTT with rc: %s" % rc)
-
 
     def mqtt_on_disconnect(self, client, userdata, rc):
         '''
@@ -97,7 +105,6 @@ class rpi_hub(object):
             log.warn("Unexpected disconnection")
         else:
             log.info("Expected disconnection")
-
 
     def mqtt_init(self):
         """
@@ -113,25 +120,31 @@ class rpi_hub(object):
         return mqtt_client
 
     def loop(self):
+        """
+            Метод бесконечного цикла
+        """
         try:
             while True:
                 self.read_real()
-                self.katok()
+                self.snc_passage()
         except Exception as e:
-            log.critical("Script has fallen")
+            log.critical("Critical exc in loop")
             log.critical(str(e))
         except KeyboardInterrupt:
             log.info("That's all, folks")
 
-    def katok(self):
+    def snc_passage(self):
+        """
+            Проход по списку датчиков и перезапись значений в брокер
+        """
         for snc in self.snc_list:
             snc.write2mqtt()
 
     def send_raw_data(self, income):
         """
             Тестовая штука для отсылки сырых данных в топики debug/
-        """
 
+        """
         __types = {
                     '0': "SNC_T_AIR",
                     '3': "SNC_LUMI",
@@ -180,14 +193,27 @@ class rpi_hub(object):
             self.concat_data(inc_data)
 
     def concat_data(self, inc_data):
+        """
+            Метод "склейки" байтов сообщения с проверкой типа устройства
+            inc_data - кортеж с пришедшими данными
+        """
+        # Адрес устройства
         d_addr = 0
+        # String'овый тип устройства
         d_type = "-"
+        # RSSI
         d_rssi = 0
+        # Номер пакета
         d_packid = 0
+        # Уровень заряда батареи
         d_bat = 0
+        # Младший байт данных
         __data_lb = 0
+        # Старший байт данных
         __data_sb = 0
+        # Итоговые данные
         data_sum = 0
+
         try:
             # адрес устройства
             d_addr = inc_data[0][1]
@@ -205,7 +231,7 @@ class rpi_hub(object):
             # Старший байт данных
             __data_sb = inc_data[0][6] << 8
         except Exception as e:
-            #log.error("Bad pack received: %s" % inc_data)
+            # log.error("Bad pack received: %s" % inc_data)
             log.error("Exception: %s", e)
         # Проверка на наличие кода типа в списке
         if (d_type in self.types):
@@ -226,13 +252,24 @@ class rpi_hub(object):
             self.update_data(r_type, r_name, data_sum)
 
     def update_data(self, r_type, r_name, data):
+        """
+            Обновление данных на топике устройства
+            r_type - тип устройства (прочитанный с rfm-сообщения)
+            r_name - адрес устройства (прочитанный с rfm-сообщения)
+            data - данные для записи
+        """
+        # Проход по списку датчиков
         for snc in self.snc_list:
+            # Поиск необходимого датчика по имени и типу
             if (snc.d_type == r_type) and (snc.name == r_name):
+                # Перезапись времени последнего ответа
                 snc.last_responce = time.time()
+                # Присвоение прочитанных данных
                 snc.data = data
+                # Запись в брокер
                 snc.write2mqtt()
+                # LOG
                 log.info("Sencor %s data updated" % (snc.d_type+":"+snc.name))
-
 
 
 class Device(object):
@@ -287,7 +324,6 @@ class Device(object):
 
         return data_pack
 
-
     def write2device(self, clnt, usrdt, msg):
         '''
             Метод отправки команды на конечное устройство
@@ -295,7 +331,6 @@ class Device(object):
         log.debug("SENT from: %s DATA: %s" % (msg.topic, msg.payload))
         data_pack = self.convert_data(msg)
         log.debug("Data 2 transmit: %s" % data_pack)
-
 
 
 class Sencor(object):
