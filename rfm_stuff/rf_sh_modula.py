@@ -207,7 +207,7 @@ class rpi_hub(object):
             # Присвоение имени (string)
             r_name = str(d_addr)
 
-            if (data_lb | data_sb) in self.errors[r_type]:
+            if (__data_lb | __data_sb) in self.errors[r_type]:
                 data_sum = "Ошибка датчика"
             else:
                 # Преобразования данных для различных типов датчиков
