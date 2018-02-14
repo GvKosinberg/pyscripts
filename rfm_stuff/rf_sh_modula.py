@@ -169,8 +169,8 @@ class rpi_hub(object):
         # если ответ пришел, данные записываются в кортеж
         if type(inc_data) == tuple:
             # TEMP: Тестовая хренотень
-            send_raw_data(inc_data)
-            concat_inc(inc_data)
+            self.send_raw_data(inc_data)
+            self.concat_inc(inc_data)
 
     def concat_data(self, inc_data):
         d_addr = 0
