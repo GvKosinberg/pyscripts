@@ -205,7 +205,7 @@ class rpi_hub(object):
             # Старший байт данных
             __data_sb = inc_data[0][6] << 8
         except Exception as e:
-            log.error("Bad pack received: %s" % inc_data)
+            #log.error("Bad pack received: %s" % inc_data)
             log.error("Exception: %s", e)
         # Проверка на наличие кода типа в списке
         if (d_type in self.types):
