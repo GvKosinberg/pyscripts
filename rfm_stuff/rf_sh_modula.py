@@ -349,7 +349,7 @@ class Sencor(object):
             self.rssi = 0
             self.bat_lvl = 0
             self.pack_id = 0
-            self.rpi_hub.add_snc()
+            self.rpi_hub.add_snc(self)
         else:
             log.error("Invalid device type: %s" % d_type)
 
