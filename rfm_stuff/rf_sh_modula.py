@@ -432,12 +432,12 @@ if __name__ == "__main__":
     rpi_hub = rpi_hub()
     # try:
     log.info("Init of devices")
-    fake_t_air = Sencor("SNC_T_AIR", "1", rpi_hub)
+    real_t_air = Sencor("SNC_T_AIR", "1", rpi_hub, timeout=1080)
     fake_t_wat = Sencor("SNC_T_WATER", "1", rpi_hub)
     fake_t_heat = Sencor("SNC_T_HEATER", "1", rpi_hub)
 
     fake_humi = Sencor("SNC_HUMI", "1", rpi_hub)
-    fake_lumi = Sencor("SNC_LUMI", "9", rpi_hub)
+    real_lumi = Sencor("SNC_LUMI", "9", rpi_hub, timeout=1080)
 
     fake_door = Sencor("SNC_DOOR", "1", rpi_hub)
 
