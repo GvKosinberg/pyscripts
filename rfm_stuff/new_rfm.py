@@ -121,10 +121,31 @@ class RPI_hub(object):
             log.info("That's all, folks")
 
     def read_real(self):
-        pass
+        """
+            Метод чтения данных с rfm
+        """
+        # # Ожидание сообщения
+        # inc_data = self.rfm.wait_for_packet(59)
+        #
+        # # Проверка данных (если данные не пришли type(inc_data!=None))
+        # # если ответ пришел, данные записываются в кортеж
+        # if type(inc_data) == tuple:
+        #     # TEMP: Тестовая хренотень
+        #     self.send_raw_data(inc_data)
+        #     self.concat_data(inc_data)
+        time.sleep(20)
 
     def snc_passage(self):
-        pass
+        """
+            Проход по списку датчиков и перезапись значений в брокер
+        """
+        for snc in self.snc_list:
+            if snc.is_fake:
+                snc.data = snc.get_random_state()
+            else:
+                snc.check_timeout()
+            snc.write2mqtt()
+
 
 rpi_hub = RPI_hub()
 
@@ -151,7 +172,7 @@ class Sencor(object):
         self.topic_rssi = self.topic_com + "/rssi"
         self.topic_lstrsp = self.topic_com + "/lr"
         self.topic_bat = self.topic_com + "/bat"
-        self.topic_val = self.topic_com + "/packid"
+        self.topic_packid = self.topic_com + "/packid"
 
     def check_timeout(self):
         '''
@@ -163,7 +184,7 @@ class Sencor(object):
         if __t_diff > self.d_timeout:
             self.data = "Таймаут"
             log.debug("Sencor: %s: time between responces: %s" % (
-                    (self.d_type+":"+self.name), __t_diff))
+                    (str(type(self))+":"+self.addr), __t_diff))
 
     def write2mqtt(self):
         # Для отображения в OH2
@@ -178,18 +199,21 @@ class Sencor(object):
 
 class Air_t_snc(Sencor):
     ''' Класс датчиков температуры '''
-    def __init__(self, addr, timeout=80, fake=True):
+    def __init__(self, addr, timeout=80, is_fake=True):
         self.addr = str(addr)
         self.topic_com = "oh/sncs/temp/air/" + self.addr
         self.d_timeout = timeout
         super().__init__()
 
+        self.is_fake = is_fake
         self.snc_type = "SNC_T_AIR"
         self.type_id = 0
         self.data_err = 0x7FF
         self.rpi_hub.add_snc(self)
 
     def convert_data(self, data):
+        self.last_responce = time.time()
+
         __data_lb = data[5]
         __data_sb = data[6] << 8
 
@@ -198,7 +222,7 @@ class Air_t_snc(Sencor):
         if __data_sum == self.data_err:
             self.data = "Ошибка датчика"
         else:
-            self.data = __data_sum 
+            self.data = __data_sum
 
     def get_random_state(self):
         ''' Генератор псевдослучайных значений '''
