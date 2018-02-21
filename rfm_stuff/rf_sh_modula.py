@@ -26,7 +26,6 @@ path = "/home/pi/pyscripts/pylog/pylog.log"
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
-# add a rotating handler
 rfh = TimedRotatingFileHandler(
                                 path,
                                 when="D",
@@ -87,7 +86,6 @@ class rpi_hub(object):
                                 reset_pin=22,
                                 spi_channel=0,
                                 config=myconf)
-        # setting RSSI treshold
         rfm_unit.set_rssi_threshold(-114)
         return rfm_unit
 
@@ -308,21 +306,21 @@ class Device(object):
             log.error("Invalid device type: %s" % d_type)
 
     def convert_data(self, msg):
-        data_pack = [0, 0, 0, 0, 0]
+        __data_pack = [0, 0, 0, 0, 0]
         # NOTE: device self id/name
-        data_pack[0] = int(self.name)
+        __data_pack[0] = int(self.name)
         # NOTE: server/hub addr
-        data_pack[1] = 0
+        __data_pack[1] = 0
         # TODO: device group id
-        data_pack[2] = 14
+        __data_pack[2] = 14
         # XXX: cnt of cmd ???
-        data_pack[3] = 0
+        __data_pack[3] = 0
 
-        data_mqtt = msg.payload
+        __data_mqtt = msg.payload
         # DEBUG: 4 relays
-        data_pack[4] = 1 if msg.payload == "ON" else 0
+        __data_pack[4] = 1 if msg.payload == "ON" else 0
 
-        return data_pack
+        return __data_pack
 
     def write2device(self, clnt, usrdt, msg):
         '''
