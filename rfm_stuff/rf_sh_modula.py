@@ -491,4 +491,6 @@ if __name__ == "__main__":
     # fake_step = Device("DIM_STEP", "1", rpi_hub)
     # fake_trmrl = Device("DIM_TRMRL", "1", rpi_hub)
 
+    time.sleep(2)
+
     rpi_hub.loop()
