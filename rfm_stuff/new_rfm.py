@@ -8,7 +8,7 @@
 import os
 import sys
 
-#import rfm69
+import rfm69
 import paho.mqtt.client as mqtt
 
 import time
