@@ -124,6 +124,7 @@ class RPI_hub(object):
         """
             Метод чтения данных с rfm
         """
+        log.debug("##=======New iter=========##")
         # Ожидание сообщения
         inc_data = self.rfm.wait_for_packet(59)
 
