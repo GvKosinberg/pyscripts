@@ -283,17 +283,17 @@ class Temp_snc(Sencor):
         "limits": [50.00, 100.00],
         }
 
-        __types = {
+        self.__types = {
         "air": air_dict,
         "water": water_dict,
         "heater": heater_dict,
         }
 
-        self.snc_type = __types[s_type]["snc_type"]
+        self.snc_type = self.__types[s_type]["snc_type"]
         log.debug("type in init: %s" % self.snc_type)
 
         self.addr = str(addr)
-        self.topic_com = __types[s_type]["topic"] + self.addr
+        self.topic_com = self.__types[s_type]["topic"] + self.addr
         self.d_timeout = timeout
         super(Temp_snc, self).__init__()
 
@@ -313,16 +313,14 @@ class Temp_snc(Sencor):
 
         __data_sum = (__data_lb | __data_sb) & 0xFFF
 
-        log.debug("__data_sb = %s, __data_lb = %s, __data_sum = %s" % (__data_sb, __data_lb, __data_sum))
         if __data_sum == self.data_err:
             self.data = "Ошибка датчика"
         else:
             self.data = str(__data_sum/10.00) + " °C"
-            log.debug("Air snc data after conversion: %s" % self.data)
 
     def get_random_state(self):
         ''' Генератор псевдослучайных значений '''
-        __limits = __types[s_type]["limits"]
+        __limits = self.__types[s_type]["limits"]
         random_data = random.uniform(__limits[0], __limits[1])
         return random_data
 
