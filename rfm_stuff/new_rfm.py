@@ -250,6 +250,15 @@ class Sencor(object):
         self.mqtt_c.publish(self.topic_lstrsp, self.last_responce)
         self.mqtt_c.publish(self.topic_packid, self.pack_id)
 
+class Lumi_snc(Sencor):
+    ''' Класс датчиков освещенности '''
+    def __init__(self, addr, timeout=1080, is_fake=True):
+        lumi_dict = {
+        "snc_type": "SNC_LUMI",
+        "topic": "oh/sncs/lumi",
+        "limits": [150.00, 300.00],
+        }
+
 
 class Temp_snc(Sencor):
     ''' Класс датчиков температуры '''
@@ -279,7 +288,8 @@ class Temp_snc(Sencor):
         "heater": heater_dict,
         }
 
-        self.snc_type = s_type
+        self.snc_type = __types[s_type]["snc_type"]
+        log.debug("type in init: %s" % self.snc_type)
 
         self.addr = str(addr)
         self.topic_com = __types[s_type]["topic"] + self.addr
@@ -311,7 +321,7 @@ class Temp_snc(Sencor):
 
     def get_random_state(self):
         ''' Генератор псевдослучайных значений '''
-        __limits = [19.00, 25.00]
+        __limits = __types[s_type]["limits"]
         random_data = random.uniform(__limits[0], __limits[1])
         return random_data
 
