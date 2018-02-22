@@ -8,7 +8,7 @@
 import os
 import sys
 
-# import rfm69
+#import rfm69
 import paho.mqtt.client as mqtt
 
 import time
@@ -23,7 +23,7 @@ from logging.handlers import TimedRotatingFileHandler
 """
 
 #path = "/home/pi/pyscripts/pylog/pylog.log"
-path = "pylog/pylog.log"
+path = "pylog.log"
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
@@ -132,42 +132,8 @@ class RPI_hub(object):
         # if type(inc_data) == tuple:
         #     # TEMP: Тестовая хренотень
         #     self.send_raw_data(inc_data)
-        #     self.update_snc(inc_data)
+        #     self.concat_data(inc_data)
         time.sleep(20)
-
-    def send_raw_data(self, income):
-        ''' Тестовая штука для отправки сырых данных в топики debug/ '''
-        __types = {
-                    '0': "SNC_T_AIR",
-                    '3': "SNC_LUMI",
-                    '6': 'CNTR',
-                    '7': "SNC_DOOR",
-                    '14': "DEV_RELAY",
-                    '3378': "ENCLAVE"
-        }
-        try:
-            addr_r = str(income[0][1])
-            type_r = str(income[0][2])
-
-            topic_base = "debug/" + __types[type_r] + "/" + addr_r
-
-            topic_arr = topic_base + "/arr"
-            array = income[0]
-            data = ""
-            for i in array:
-                data += str(hex(i)) + " "
-            self.mqtt_client.publish(topic_arr, data)
-            log.debug("RAW Topic %s, %s" % (topic_arr, data))
-
-            topic_rssi = topic_base + "/rssi"
-            data = str(income[1])
-            self.mqtt_client.publish(topic_rssi, data)
-            log.debug("RAW Topic %s, %s" % (topic_rssi, data))
-
-            log.debug("RAW DATA SENT")
-        except Exception as e:
-            log.warn("Bad packet received: %s" % e)
-            log.warn("Packet: %s" % income[0])
 
     def snc_passage(self):
         """
@@ -179,26 +145,6 @@ class RPI_hub(object):
             else:
                 snc.check_timeout()
             snc.write2mqtt()
-
-    def update_snc(self, income):
-        try:
-            __types_sncs = {
-                    '0': "SNC_T_AIR",
-                    '3': "SNC_LUMI",
-                    '6': 'CNTR',
-                    '7': "SNC_DOOR",
-                    '14': "DEV_RELAY",
-                    '3378': "ENCLAVE"
-            }
-            addr_r = str(income[0][1])
-            type_r = __types_sncs[str(income[0][2])]
-            for snc in snc_list:
-                if snc.snc_type == type_r:
-                    snc.convert_data(income[0])
-                    snc.write2mqtt()
-        except Exception as e:
-            log.warn("Bad packet received: %s" % e)
-            log.warn("Packet: %s" % income[0])
 
 
 rpi_hub = RPI_hub()
@@ -257,7 +203,7 @@ class Air_t_snc(Sencor):
         self.addr = str(addr)
         self.topic_com = "oh/sncs/temp/air/" + self.addr
         self.d_timeout = timeout
-        super().__init__()
+        super(Air_t_snc, self).__init__()
 
         self.is_fake = is_fake
         self.snc_type = "SNC_T_AIR"
