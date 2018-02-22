@@ -178,6 +178,7 @@ class RPI_hub(object):
             if snc.is_fake:
                 log.debug("Fake sencor detected in pass: %s" % snc.snc_type)
                 snc.data = snc.get_random_state()
+                log.debug("Fake data: %s" % snc.data)
             else:
                 snc.check_timeout()
             snc.write2mqtt()
@@ -286,6 +287,8 @@ class Sencor(object):
         self.mqtt_c.publish(self.topic_bat, self.bat_lvl)
         self.mqtt_c.publish(self.topic_lstrsp, self.last_responce)
         self.mqtt_c.publish(self.topic_packid, self.pack_id)
+
+        log.debug("Writing data: %s, to %s" %(self.data, self.snc_type))
 
 class Lumi_snc(Sencor):
     ''' Класс датчиков освещенности '''
