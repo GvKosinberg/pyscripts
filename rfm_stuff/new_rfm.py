@@ -251,16 +251,40 @@ class Sencor(object):
         self.mqtt_c.publish(self.topic_packid, self.pack_id)
 
 
-class Air_t_snc(Sencor):
+class Temp_snc(Sencor):
     ''' Класс датчиков температуры '''
-    def __init__(self, addr, timeout=1080, is_fake=True):
+    def __init__(self, addr, s_type, timeout=1080, is_fake=True):
+
+        air_dict = {
+        topic = "oh/sncs/temp/air/",
+        limits = [19.00, 25.00],
+        }
+
+        water_dict = {
+        topic = "oh/sncs/temp/air/",
+        limits = [5.00, 22.00],
+        }
+
+        heater_dict = {
+        topic = "oh/sncs/temp/air/",
+        limits = [50.00, 100.00],
+        }
+
+        __types = {
+        "air": air_dict,
+        "water": water_dict,
+        "heater" heater_dict,
+        }
+
+        self.snc_type = s_type
+
         self.addr = str(addr)
-        self.topic_com = "oh/sncs/temp/air/" + self.addr
+        self.topic_com = __types[s_type][topic] + self.addr
         self.d_timeout = timeout
         super(Air_t_snc, self).__init__()
 
+
         self.is_fake = is_fake
-        self.snc_type = "SNC_T_AIR"
         self.type_id = 0
         self.data_err = 0x7FF
         self.rpi_hub.add_snc(self)
@@ -291,6 +315,8 @@ class Air_t_snc(Sencor):
 
 if __name__ == '__main__':
     log.info("Entered main")
-    fake_air_snc_1 = Air_t_snc(addr = 1, is_fake=False)
+    real_air_snc_1 = Temp_snc(addr = 1, s_type="air", is_fake=False)
+    fake_water_snc_2 = Temp_snc(addr = 2, s_type="water")
+    fake_water_snc_3 = Temp_snc(addr = 3, s_type="heater")
 
     rpi_hub.loop()
