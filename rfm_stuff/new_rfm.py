@@ -198,7 +198,7 @@ class RPI_hub(object):
                     snc.write2mqtt()
         except Exception as e:
             log.warn("Bad packet received: %s" % e)
-            log.warn("Packet: %s" % income[0])
+            log.warn("Packet: %s" % str(income[0]))
 
 
 rpi_hub = RPI_hub()
@@ -267,15 +267,19 @@ class Air_t_snc(Sencor):
     def convert_data(self, data):
         self.last_responce = time.time()
 
+        log.debug("Testing data conversion")
+
         __data_lb = data[5]
         __data_sb = data[6] << 8
 
         __data_sum = (__data_lb & __data_sb) & 0xFFF
 
+        log.debug("__data_sum = %s" % __data_sum)
         if __data_sum == self.data_err:
             self.data = "Ошибка датчика"
         else:
             self.data = str(__data_sum/10.00) + " °C"
+            log.debug("Air snc data after conversion: %s" % self.data)
 
     def get_random_state(self):
         ''' Генератор псевдослучайных значений '''
