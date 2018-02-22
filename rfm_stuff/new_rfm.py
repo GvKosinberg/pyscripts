@@ -283,17 +283,19 @@ class Temp_snc(Sencor):
         "limits": [50.00, 100.00],
         }
 
-        self.__types = {
+        __types = {
         "air": air_dict,
         "water": water_dict,
         "heater": heater_dict,
         }
 
-        self.snc_type = self.__types[s_type]["snc_type"]
+        self.settings = __types[s_type]
+
+        self.snc_type = self.settings["snc_type"]
         log.debug("type in init: %s" % self.snc_type)
 
         self.addr = str(addr)
-        self.topic_com = self.__types[s_type]["topic"] + self.addr
+        self.topic_com = self.settings["topic"] + self.addr
         self.d_timeout = timeout
         super(Temp_snc, self).__init__()
 
@@ -320,7 +322,7 @@ class Temp_snc(Sencor):
 
     def get_random_state(self):
         ''' Генератор псевдослучайных значений '''
-        __limits = self.__types[s_type]["limits"]
+        __limits = self.settings["limits"]
         random_data = random.uniform(__limits[0], __limits[1])
         return random_data
 
