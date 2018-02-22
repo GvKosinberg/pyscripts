@@ -330,7 +330,7 @@ class Device(object):
         data_pack = self.convert_data(msg)
         log.debug("Data 2 transmit: %s" % data_pack)
         self.rpi_hub.rfm.send_packet(data_pack)
-        self.wait_for_packet(5)
+        self.rpi_hub.wait_for_packet(5)
 
 
 
