@@ -273,7 +273,7 @@ class Temp_snc(Sencor):
         __types = {
         "air": air_dict,
         "water": water_dict,
-        "heater" heater_dict,
+        "heater": heater_dict,
         }
 
         self.snc_type = s_type
