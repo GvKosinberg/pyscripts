@@ -23,7 +23,7 @@ from logging.handlers import TimedRotatingFileHandler
 """
 
 path = "/home/pi/pyscripts/pylog/pylog.log"
-#path = "pylog.log"
+# path = "pylog.log"
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
@@ -69,13 +69,13 @@ class RPI_hub(object):
             На выходе объект класса rfm69
         """
         rfm_unit = "RFM zaglushka"
-        # myconf = rfm69.RFM69Configuration()
-        # rfm_unit = rfm69.RFM69(
-        #                         dio0_pin=24,
-        #                         reset_pin=22,
-        #                         spi_channel=0,
-        #                         config=myconf)
-        # rfm_unit.set_rssi_threshold(-114)
+        myconf = rfm69.RFM69Configuration()
+        rfm_unit = rfm69.RFM69(
+                                dio0_pin=24,
+                                reset_pin=22,
+                                spi_channel=0,
+                                config=myconf)
+        rfm_unit.set_rssi_threshold(-114)
         return rfm_unit
 
     def mqtt_on_connect(self, client, userdata, flags, rc):
@@ -124,15 +124,15 @@ class RPI_hub(object):
         """
             Метод чтения данных с rfm
         """
-        # # Ожидание сообщения
-        # inc_data = self.rfm.wait_for_packet(59)
-        #
-        # # Проверка данных (если данные не пришли type(inc_data!=None))
-        # # если ответ пришел, данные записываются в кортеж
-        # if type(inc_data) == tuple:
-        #     # TEMP: Тестовая хренотень
-        #     self.send_raw_data(inc_data)
-        #     self.concat_data(inc_data)
+        # Ожидание сообщения
+        inc_data = self.rfm.wait_for_packet(59)
+
+        # Проверка данных (если данные не пришли type(inc_data!=None))
+        # если ответ пришел, данные записываются в кортеж
+        if type(inc_data) == tuple:
+            # TEMP: Тестовая хренотень
+            self.send_raw_data(inc_data)
+            self.concat_data(inc_data)
         time.sleep(20)
 
     def snc_passage(self):
@@ -233,6 +233,6 @@ class Air_t_snc(Sencor):
 
 if __name__ == '__main__':
     log.info("Entered main")
-    fake_air_snc_1 = Air_t_snc(addr = 1)
+    fake_air_snc_1 = Air_t_snc(addr=1, is_fake=False)
 
     rpi_hub.loop()
