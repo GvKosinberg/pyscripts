@@ -173,7 +173,7 @@ class rpi_hub(object):
             log.debug("RAW DATA SENT")
         except Exception as e:
             log.warn("Bad packet received: %s", e)
-            log.warn("Packet: %s" % str(income[0]))
+            log.warn("Packet: %s" % str(income))
 
     def read_real(self):
         """
