@@ -261,12 +261,12 @@ class Temp_snc(Sencor):
         }
 
         water_dict = {
-        topic = "oh/sncs/temp/air/",
+        topic = "oh/sncs/temp/water/",
         limits = [5.00, 22.00],
         }
 
         heater_dict = {
-        topic = "oh/sncs/temp/air/",
+        topic = "oh/sncs/temp/heater/",
         limits = [50.00, 100.00],
         }
 
