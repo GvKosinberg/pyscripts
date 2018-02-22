@@ -234,6 +234,8 @@ lumi_dict = {
 }
 
 
+
+
 sencor_settings = {
     "air": air_dict,
     "water": water_dict,
@@ -288,7 +290,7 @@ class Sencor(object):
         self.mqtt_c.publish(self.topic_lstrsp, self.last_responce)
         self.mqtt_c.publish(self.topic_packid, self.pack_id)
 
-        log.debug("Writing data: %s, to %s" %(self.data, self.snc_type))
+        log.debug("Writing data: %s, to %s:%s" %(self.data, self.snc_type, self.addr))
 
 class Lumi_snc(Sencor):
     ''' Класс датчиков освещенности '''
