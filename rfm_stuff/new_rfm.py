@@ -252,7 +252,7 @@ class Sencor(object):
 
 class Air_t_snc(Sencor):
     ''' Класс датчиков температуры '''
-    def __init__(self, addr, timeout=80, is_fake=True):
+    def __init__(self, addr, timeout=1080, is_fake=True):
         self.addr = str(addr)
         self.topic_com = "oh/sncs/temp/air/" + self.addr
         self.d_timeout = timeout
