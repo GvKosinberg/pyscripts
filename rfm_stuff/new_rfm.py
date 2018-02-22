@@ -135,6 +135,40 @@ class RPI_hub(object):
             self.concat_data(inc_data)
         time.sleep(20)
 
+    def send_raw_data(self, income):
+        __types = {
+                    '0': "SNC_T_AIR",
+                    '3': "SNC_LUMI",
+                    '6': 'CNTR',
+                    '7': "SNC_DOOR",
+                    '14': "DEV_RELAY",
+                    '3378': "ENCLAVE"
+        }
+        try:
+            addr_r = str(income[0][1])
+            type_r = str(income[0][2])
+
+            topic_base = "debug/" + __types[type_r] + "/" + addr_r
+
+            topic_arr = topic_base + "/arr"
+            array = income[0]
+            data = ""
+            for i in array:
+                data += str(hex(i)) + " "
+            self.mqtt_client.publish(topic_arr, data)
+            log.debug("RAW Topic %s, %s" % (topic_arr, data))
+
+            topic_rssi = topic_base + "/rssi"
+            data = str(income[1])
+            self.mqtt_client.publish(topic_rssi, data)
+            log.debug("RAW Topic %s, %s" % (topic_rssi, data))
+
+            log.debug("RAW DATA SENT")
+        except Exception as e:
+            log.warn("Bad packet received: %s", e)
+            log.warn("Packet: %s" % income[0])
+
+
     def snc_passage(self):
         """
             Проход по списку датчиков и перезапись значений в брокер
