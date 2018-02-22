@@ -485,7 +485,7 @@ if __name__ == "__main__":
 
     fake_cntr = Sencor("CNTR", "1", rpi_hub)
 
-    fake_relay = Device("RELAY", "1", rpi_hub)
+    fake_relay = Device("RELAY", "210", rpi_hub)
     fake_crane = Device("DIM_CRANE", "1", rpi_hub)
     fake_curt = Device("DIM_CURT", "1", rpi_hub)
     fake_step = Device("DIM_STEP", "1", rpi_hub)
