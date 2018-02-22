@@ -329,7 +329,7 @@ class Device(object):
         log.debug("SENT from: %s DATA: %s" % (msg.topic, msg.payload))
         data_pack = self.convert_data(msg)
         log.debug("Data 2 transmit: %s" % data_pack)
-        #self.rpi_hub.rfm.send_packet(data_pack)
+        self.rpi_hub.rfm.send_packet(data_pack)
 
 
 
