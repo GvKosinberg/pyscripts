@@ -256,16 +256,19 @@ class Temp_snc(Sencor):
     def __init__(self, addr, s_type, timeout=1080, is_fake=True):
 
         air_dict = {
+        "snc_type": "SNC_T_AIR",
         "topic": "oh/sncs/temp/air/",
         "limits": [19.00, 25.00],
         }
 
         water_dict = {
+        "snc_type": "SNC_T_WATER",
         "topic": "oh/sncs/temp/water/",
         "limits": [5.00, 22.00],
         }
 
         heater_dict = {
+        "snc_type": "SNC_T_HEATER",
         "topic": "oh/sncs/temp/heater/",
         "limits": [50.00, 100.00],
         }
