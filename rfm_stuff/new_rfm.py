@@ -205,6 +205,41 @@ class RPI_hub(object):
 
 rpi_hub = RPI_hub()
 
+# XXX: Add to file
+########################################
+air_dict = {
+    "snc_type": "SNC_T_AIR",
+    "topic": "oh/sncs/temp/air/",
+    "limits": [19.00, 25.00],
+}
+
+water_dict = {
+    "snc_type": "SNC_T_WATER",
+    "topic": "oh/sncs/temp/water/",
+    "limits": [5.00, 22.00],
+}
+
+heater_dict = {
+    "snc_type": "SNC_T_HEATER",
+    "topic": "oh/sncs/temp/heater/",
+    "limits": [50.00, 100.00],
+}
+
+lumi_dict = {
+    "snc_type": "SNC_LUMI",
+    "topic": "oh/sncs/lumi",
+    "limits": [150.00, 300.00],
+}
+
+
+sencor_settings = {
+    "air": air_dict,
+    "water": water_dict,
+    "heater": heater_dict,
+    "lumi": lumi_dict,
+}
+##############################################
+
 class Sencor(object):
     def __init__(self, rpi_hub=rpi_hub):
         # Инициализация хаба из глобаьной области и
@@ -254,42 +289,13 @@ class Sencor(object):
 class Lumi_snc(Sencor):
     ''' Класс датчиков освещенности '''
     def __init__(self, addr, timeout=1080, is_fake=True):
-        lumi_dict = {
-        "snc_type": "SNC_LUMI",
-        "topic": "oh/sncs/lumi",
-        "limits": [150.00, 300.00],
-        }
 
 
 class Temp_snc(Sencor):
     ''' Класс датчиков температуры '''
     def __init__(self, addr, s_type, timeout=1080, is_fake=True):
 
-        air_dict = {
-        "snc_type": "SNC_T_AIR",
-        "topic": "oh/sncs/temp/air/",
-        "limits": [19.00, 25.00],
-        }
-
-        water_dict = {
-        "snc_type": "SNC_T_WATER",
-        "topic": "oh/sncs/temp/water/",
-        "limits": [5.00, 22.00],
-        }
-
-        heater_dict = {
-        "snc_type": "SNC_T_HEATER",
-        "topic": "oh/sncs/temp/heater/",
-        "limits": [50.00, 100.00],
-        }
-
-        __types = {
-        "air": air_dict,
-        "water": water_dict,
-        "heater": heater_dict,
-        }
-
-        self.settings = __types[s_type]
+        self.settings = sencor_settings[s_type]
 
         self.snc_type = self.settings["snc_type"]
         log.debug("type in init: %s" % self.snc_type)
