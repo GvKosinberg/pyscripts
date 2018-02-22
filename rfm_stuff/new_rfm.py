@@ -23,7 +23,7 @@ from logging.handlers import TimedRotatingFileHandler
 """
 
 path = "/home/pi/pyscripts/pylog/pylog.log"
-# path = "pylog.log"
+# path = "pylog/pylog.log"
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
@@ -132,10 +132,11 @@ class RPI_hub(object):
         if type(inc_data) == tuple:
             # TEMP: Тестовая хренотень
             self.send_raw_data(inc_data)
-            self.concat_data(inc_data)
+            self.update_snc(inc_data)
         time.sleep(20)
 
     def send_raw_data(self, income):
+        ''' Тестовая штука для отправки сырых данных в топики debug/ '''
         __types = {
                     '0': "SNC_T_AIR",
                     '3': "SNC_LUMI",
@@ -165,9 +166,8 @@ class RPI_hub(object):
 
             log.debug("RAW DATA SENT")
         except Exception as e:
-            log.warn("Bad packet received: %s", e)
+            log.warn("Bad packet received: %s" % e)
             log.warn("Packet: %s" % income[0])
-
 
     def snc_passage(self):
         """
@@ -179,6 +179,26 @@ class RPI_hub(object):
             else:
                 snc.check_timeout()
             snc.write2mqtt()
+
+    def update_snc(self, income):
+        try:
+            __types_sncs = {
+                    '0': "SNC_T_AIR",
+                    '3': "SNC_LUMI",
+                    '6': 'CNTR',
+                    '7': "SNC_DOOR",
+                    '14': "DEV_RELAY",
+                    '3378': "ENCLAVE"
+            }
+            addr_r = str(income[0][1])
+            type_r = __types_sncs[str(income[0][2])]
+            for snc in snc_list:
+                if snc.snc_type == type_r:
+                    snc.convert_data(income[0])
+                    snc.write2mqtt()
+        except Exception as e:
+            log.warn("Bad packet received: %s" % e)
+            log.warn("Packet: %s" % income[0])
 
 
 rpi_hub = RPI_hub()
@@ -237,7 +257,7 @@ class Air_t_snc(Sencor):
         self.addr = str(addr)
         self.topic_com = "oh/sncs/temp/air/" + self.addr
         self.d_timeout = timeout
-        super(Air_t_snc, self).__init__()
+        super().__init__()
 
         self.is_fake = is_fake
         self.snc_type = "SNC_T_AIR"
@@ -267,6 +287,6 @@ class Air_t_snc(Sencor):
 
 if __name__ == '__main__':
     log.info("Entered main")
-    fake_air_snc_1 = Air_t_snc(addr=1, is_fake=False)
+    fake_air_snc_1 = Air_t_snc(addr = 1, is_fake=False)
 
     rpi_hub.loop()
