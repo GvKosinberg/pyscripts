@@ -257,7 +257,7 @@ class Air_t_snc(Sencor):
         self.addr = str(addr)
         self.topic_com = "oh/sncs/temp/air/" + self.addr
         self.d_timeout = timeout
-        super().__init__()
+        super(Air_t_snc, self).__init__()
 
         self.is_fake = is_fake
         self.snc_type = "SNC_T_AIR"
