@@ -281,7 +281,7 @@ class Temp_snc(Sencor):
         self.addr = str(addr)
         self.topic_com = __types[s_type]["topic"] + self.addr
         self.d_timeout = timeout
-        super(Air_t_snc, self).__init__()
+        super(Temp_snc, self).__init__()
 
 
         self.is_fake = is_fake
