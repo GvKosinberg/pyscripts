@@ -176,6 +176,7 @@ class RPI_hub(object):
         """
         for snc in self.snc_list:
             if snc.is_fake:
+                log.debug("Fake sencor detected in pass: %s" % snc.snc_type)
                 snc.data = snc.get_random_state()
             else:
                 snc.check_timeout()
@@ -289,6 +290,7 @@ class Sencor(object):
 class Lumi_snc(Sencor):
     ''' Класс датчиков освещенности '''
     def __init__(self, addr, timeout=1080, is_fake=True):
+        pass
 
 
 class Temp_snc(Sencor):
