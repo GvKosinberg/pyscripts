@@ -229,7 +229,7 @@ heater_dict = {
 
 lumi_dict = {
     "snc_type": "SNC_LUMI",
-    "topic": "oh/sncs/lumi",
+    "topic": "oh/sncs/lumi/",
     "limits": [150.00, 300.00],
 }
 
@@ -312,8 +312,6 @@ class Temp_snc(Sencor):
 
 
         self.is_fake = is_fake
-        self.type_id = 0
-        self.data_err = 0x7FF
         self.rpi_hub.add_snc(self)
 
     def convert_data(self, data):
@@ -341,7 +339,7 @@ class Temp_snc(Sencor):
 if __name__ == '__main__':
     log.info("Entered main")
     real_air_snc_1 = Temp_snc(addr = 1, s_type="air", is_fake=False)
-    fake_water_snc_2 = Temp_snc(addr = 2, s_type="water")
-    fake_water_snc_3 = Temp_snc(addr = 3, s_type="heater")
+    fake_water_snc_2 = Temp_snc(addr = 1, s_type="water")
+    fake_water_snc_3 = Temp_snc(addr = 1, s_type="heater")
 
     rpi_hub.loop()
