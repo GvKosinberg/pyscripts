@@ -273,9 +273,9 @@ class Air_t_snc(Sencor):
         __data_lb = data[5]
         __data_sb = data[6] << 8
 
-        __data_sum = (__data_lb & __data_sb) & 0xFFF
+        __data_sum = (__data_lb | __data_sb) & 0xFFF
 
-        log.debug("__data_sb = %s, __data_lb = %s" % (__data_sb, __data_lb))
+        log.debug("__data_sb = %s, __data_lb = %s, __data_sum = %s" % (__data_sb, __data_lb, __data_sum))
         if __data_sum == self.data_err:
             self.data = "Ошибка датчика"
         else:
