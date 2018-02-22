@@ -210,7 +210,6 @@ class Sencor(object):
         self.mqtt_c = self.rpi_hub.mqtt_client
 
         # таймаут ответа
-        self.d_timeout = 0
 
         # время последнего ответа (*nix-style)
         self.last_responce = time.time()
