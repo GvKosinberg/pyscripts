@@ -193,6 +193,7 @@ class RPI_hub(object):
             }
             addr_r = str(income[0][1])
             type_r = __types_sncs[str(income[0][2])]
+            log.debug("R_type in update fn: %s" % type_r)
             for snc in self.snc_list:
                 if snc.snc_type == type_r:
                     snc.convert_data(income[0])
