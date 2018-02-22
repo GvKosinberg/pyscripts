@@ -275,7 +275,7 @@ class Air_t_snc(Sencor):
         if __data_sum == self.data_err:
             self.data = "Ошибка датчика"
         else:
-            self.data = (__data_sum/10.00) + " °C"
+            self.data = str(__data_sum/10.00) + " °C"
 
     def get_random_state(self):
         ''' Генератор псевдослучайных значений '''
