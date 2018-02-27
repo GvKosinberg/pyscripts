@@ -18,32 +18,39 @@ import random
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
-"""
-    Подключение логера
-"""
+import settings
 
-path = "/home/pi/pyscripts/pylog/pylog.log"
-# path = "pylog/pylog.log"
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
+def set_log():
+    """
+        Подключение логера
+    """
 
-rfh = TimedRotatingFileHandler(
-                                path,
-                                when="D",
-                                interval=1,
-                                backupCount=5)
-rfh.setLevel(logging.DEBUG)
+    path = "/home/pi/pyscripts/pylog/pylog.log"
+    # path = "pylog/pylog.log"
+    log = logging.getLogger(__name__)
+    log.setLevel(logging.DEBUG)
 
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
+    rfh = TimedRotatingFileHandler(
+                                    path,
+                                    when="D",
+                                    interval=1,
+                                    backupCount=5)
+    rfh.setLevel(logging.DEBUG)
 
-formatter = logging.Formatter(
-                        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-rfh.setFormatter(formatter)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
 
-log.addHandler(ch)
-log.addHandler(rfh)
+    formatter = logging.Formatter(
+                            '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
+    rfh.setFormatter(formatter)
+
+    log.addHandler(ch)
+    log.addHandler(rfh)
+
+    return log
+
+log = set_log()
 
 class RPI_hub(object):
     """
@@ -207,42 +214,6 @@ class RPI_hub(object):
 
 rpi_hub = RPI_hub()
 
-# XXX: Add to file
-########################################
-air_dict = {
-    "snc_type": "SNC_T_AIR",
-    "topic": "oh/sncs/temp/air/",
-    "limits": [19.00, 25.00],
-}
-
-water_dict = {
-    "snc_type": "SNC_T_WATER",
-    "topic": "oh/sncs/temp/water/",
-    "limits": [5.00, 22.00],
-}
-
-heater_dict = {
-    "snc_type": "SNC_T_HEATER",
-    "topic": "oh/sncs/temp/heater/",
-    "limits": [50.00, 100.00],
-}
-
-lumi_dict = {
-    "snc_type": "SNC_LUMI",
-    "topic": "oh/sncs/lumi/",
-    "limits": [150.00, 300.00],
-}
-
-
-
-
-sencor_settings = {
-    "air": air_dict,
-    "water": water_dict,
-    "heater": heater_dict,
-    "lumi": lumi_dict,
-}
-##############################################
 
 class Sencor(object):
     def __init__(self, rpi_hub=rpi_hub):
