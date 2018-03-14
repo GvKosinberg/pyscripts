@@ -63,6 +63,8 @@ if __name__ == '__main__':
         while(time.time() <= t_finish):
             income = rfm.wait_for_packet()
             if type(income) != None:
+                pack = str(income[0])
+                mqtt.publish("oh/debug/500", pack)
                 packs_received += 1
     except KeyboardInterrupt:
         log.info("That's all, folks")
