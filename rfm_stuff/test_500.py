@@ -7,7 +7,9 @@ import paho.mqtt.client as mqtt
 import logging
 import time
 
-logging.basicConfig(level=logging.DEBUG)
+formatter = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+logging.basicConfig(level=logging.DEBUG, format=formatter)
 log = logging.getLogger("test_500")
 
 def init_rfm():
