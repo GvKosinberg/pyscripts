@@ -1,3 +1,7 @@
+#!/usr/bin/python
+# -*- coding: utf8 -*-
+# Author: Antipin S.O. @RLDA
+
 import rfm69
 import paho.mqtt.client as mqtt
 import logging
