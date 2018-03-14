@@ -60,7 +60,7 @@ if __name__ == '__main__':
     t_duration = 600
     t_finish = t_start + t_duration
     try:
-        while(time.time() != t_finish):
+        while(time.time() <= t_finish):
             income = rfm.wait_for_packet()
             if type(income) != None:
                 packs_received += 1
